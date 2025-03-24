@@ -1,5 +1,7 @@
 package org.wallentines.plib.text;
 
+import org.wallentines.plib.Color;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +45,11 @@ public class MutableComponent implements Component {
 
     public MutableComponent withStyle(Style style) {
         this.style = style;
+        return this;
+    }
+
+    public MutableComponent withColor(Color color) {
+        this.style = this.style.withColor(color);
         return this;
     }
 

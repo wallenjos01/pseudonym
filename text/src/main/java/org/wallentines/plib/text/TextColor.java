@@ -68,6 +68,16 @@ public enum TextColor implements Color {
         return LEGACY_COLORS[index].toHex();
     }
 
+    public char getCharacter() {
+        if(ordinal() < 10) {
+            return (char) ('0' + ordinal());
+        }
+        if(ordinal() < 15) {
+            return (char) ('a' + ordinal());
+        }
+        return 'f';
+    }
+
     public byte dataValue() {
         return LEGACY_DATA_VALUES[index];
     }
@@ -123,7 +133,7 @@ public enum TextColor implements Color {
     }
 
     public static final Serializer<Color> LEGACY_SERIALIZER = InlineSerializer.of(TextColor::colorName, TextColor::fromLegacyName).flatMap(TextColor::getClosest, Function.identity());
-    public static final Serializer<Color> NAME_SERIALIZER = InlineSerializer.<Color>of(Color::toHex, RGB::parseHex).or(LEGACY_SERIALIZER);
+    public static final Serializer<Color> NAME_SERIALIZER = InlineSerializer.<Color>of(color -> color.toRGB().toHex(), RGB::parseHex).or(LEGACY_SERIALIZER);
     public static final Serializer<Color> ARGB_SERIALIZER = Serializer.INT.flatMap(Color::value, ARGB::new);
 
 

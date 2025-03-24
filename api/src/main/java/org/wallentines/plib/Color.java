@@ -1,6 +1,7 @@
 package org.wallentines.plib;
 
 import java.util.Comparator;
+import java.util.HexFormat;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -13,6 +14,10 @@ public interface Color {
 
     int value();
     String toHex();
+
+    default RGB toRGB() {
+        return new RGB(red(), green(), blue());
+    }
 
     default int distanceSquaredTo(Color other) {
         return (other.red() - red()) * (other.red() - red())
@@ -40,7 +45,7 @@ public interface Color {
                 hex = hex.substring(1);
             }
             if(hex.length() != 6) return null;
-            return new RGB(Integer.parseInt(hex, 16));
+            return new RGB(HexFormat.fromHexDigits(hex));
         }
 
 
@@ -81,7 +86,7 @@ public interface Color {
                 hex = hex.substring(1);
             }
             if(hex.length() != 8) return null;
-            return new ARGB(Integer.parseInt(hex, 16));
+            return new ARGB(HexFormat.fromHexDigits(hex));
         }
 
         @Override

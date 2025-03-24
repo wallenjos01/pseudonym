@@ -57,6 +57,14 @@ public record Style(Color color, Boolean bold, Boolean italic, Boolean underline
     }
 
 
+    public boolean isBold() { return Boolean.TRUE.equals(bold); }
+    public boolean isItalic() { return Boolean.TRUE.equals(italic); }
+    public boolean isUnderlined() { return Boolean.TRUE.equals(underlined); }
+    public boolean isStrikethrough() { return Boolean.TRUE.equals(strikethrough); }
+    public boolean isObfuscated() { return Boolean.TRUE.equals(obfuscated); }
+
+
+
     public static final Serializer<Style> LEGACY_SERIALIZER = ObjectSerializer.create(
             TextColor.LEGACY_SERIALIZER.entry("color", Style::color).optional(),
             Serializer.BOOLEAN.entry("bold", Style::bold).optional(),
