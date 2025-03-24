@@ -6,6 +6,6 @@ public interface ParameterTransformer<T> {
 
 
     ParameterTransformer<UnresolvedMessage<String>> IDENTITY = parameter -> parameter;
-    ParameterTransformer<String> RESOLVE_EARLY = parameter -> UnresolvedMessage.resolve(parameter, new PlaceholderContext());
+    ParameterTransformer<String> RESOLVE_EARLY = parameter -> UnresolvedMessage.resolve(parameter, new PipelineContext());
 
 }

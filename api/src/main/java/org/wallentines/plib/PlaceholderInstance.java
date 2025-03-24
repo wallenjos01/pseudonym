@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 public record PlaceholderInstance<T, P>(Placeholder<T, P> parent, P param) {
 
-    public Optional<T> resolve(PlaceholderContext ctx) {
+    public Optional<T> resolve(PipelineContext ctx) {
         return parent.resolve(new ResolveContext<>(ctx, param));
     }
 

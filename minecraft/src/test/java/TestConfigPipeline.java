@@ -38,35 +38,35 @@ public class TestConfigPipeline {
     @Test
     public void worksWithoutPlaceholders() {
         String toParse = "Hello, World";
-        Component parsed = pipeline.accept(toParse, new PlaceholderContext());
+        Component parsed = pipeline.accept(toParse, new PipelineContext());
         Assertions.assertEquals(Component.literal("Hello, World"), parsed);
     }
 
     @Test
     public void worksWithStringPlaceholder() {
         String toParse = "Hello, <name>";
-        Component parsed = pipeline.accept(toParse, new PlaceholderContext());
+        Component parsed = pipeline.accept(toParse, new PipelineContext());
         Assertions.assertEquals(Component.literal("Hello, World"), parsed);
     }
 
     @Test
     public void worksWithMultipleStringPlaceholders() {
         String toParse = "<greeting> <name>";
-        Component parsed = pipeline.accept(toParse, new PlaceholderContext());
+        Component parsed = pipeline.accept(toParse, new PipelineContext());
         Assertions.assertEquals(Component.literal("Hello, World"), parsed);
     }
 
     @Test
     public void worksWithComponentPlaceholder() {
         String toParse = "Hello, <display_name>";
-        Component parsed = pipeline.accept(toParse, new PlaceholderContext());
+        Component parsed = pipeline.accept(toParse, new PipelineContext());
         Assertions.assertEquals(Component.literal("Hello, ").append(displayName), parsed);
     }
 
     @Test
     public void worksWithStringAndComponentPlaceholders() {
         String toParse = "<greeting> <display_name>";
-        Component parsed = pipeline.accept(toParse, new PlaceholderContext());
+        Component parsed = pipeline.accept(toParse, new PipelineContext());
         Assertions.assertEquals(Component.literal("Hello, ").append(displayName), parsed);
     }
 
@@ -74,35 +74,35 @@ public class TestConfigPipeline {
     @Test
     public void worksWithStyle() {
         String toParse = "&cHello, World";
-        Component parsed = pipeline.accept(toParse, new PlaceholderContext());
+        Component parsed = pipeline.accept(toParse, new PipelineContext());
         Assertions.assertEquals(Component.literal("Hello, World").withStyle(ChatFormatting.RED), parsed);
     }
 
     @Test
     public void worksWithStyleAndStringPlaceholder() {
         String toParse = "&cHello, <name>";
-        Component parsed = pipeline.accept(toParse, new PlaceholderContext());
+        Component parsed = pipeline.accept(toParse, new PipelineContext());
         Assertions.assertEquals(Component.literal("Hello, World").withStyle(ChatFormatting.RED), parsed);
     }
 
     @Test
     public void worksWithStyleAndMultipleStringPlaceholder() {
         String toParse = "&c<greeting> <name>";
-        Component parsed = pipeline.accept(toParse, new PlaceholderContext());
+        Component parsed = pipeline.accept(toParse, new PipelineContext());
         Assertions.assertEquals(Component.literal("Hello, World").withStyle(ChatFormatting.RED), parsed);
     }
 
     @Test
     public void worksWithStyleAndComponentPlaceholder() {
         String toParse = "&c<greeting> <display_name>";
-        Component parsed = pipeline.accept(toParse, new PlaceholderContext());
+        Component parsed = pipeline.accept(toParse, new PipelineContext());
         Assertions.assertEquals(Component.literal("Hello, ").withStyle(ChatFormatting.RED).append(displayName), parsed);
     }
 
     @Test
     public void worksWithStyleAndComponentPlaceholderWithTrailingText() {
         String toParse = "&c<greeting> <display_name>!";
-        Component parsed = pipeline.accept(toParse, new PlaceholderContext());
+        Component parsed = pipeline.accept(toParse, new PipelineContext());
         Assertions.assertEquals(Component.literal("Hello, ").withStyle(ChatFormatting.RED).append(displayName.copy()).append("!"), parsed);
     }
 
@@ -110,7 +110,7 @@ public class TestConfigPipeline {
     public void canParseReset() {
 
         String toParse = "&cHello, &r<display_name>!";
-        Component parsed = pipeline.accept(toParse, new PlaceholderContext());
+        Component parsed = pipeline.accept(toParse, new PipelineContext());
 
         Assertions.assertEquals(
                 Component.empty()
@@ -124,7 +124,7 @@ public class TestConfigPipeline {
     public void canParseResetAfterPlaceholder() {
 
         String toParse = "&cHello, <display_name>&r!";
-        Component parsed = pipeline.accept(toParse, new PlaceholderContext());
+        Component parsed = pipeline.accept(toParse, new PipelineContext());
 
         Assertions.assertEquals(
                 Component.empty()

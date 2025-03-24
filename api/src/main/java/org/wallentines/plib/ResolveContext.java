@@ -1,4 +1,4 @@
 package org.wallentines.plib;
 
-public record ResolveContext<P>(PlaceholderContext context, P param) {
+public record ResolveContext<P>(PipelineContext context, P param) {
 }

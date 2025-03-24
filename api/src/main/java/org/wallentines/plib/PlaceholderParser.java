@@ -20,7 +20,7 @@ public class PlaceholderParser implements MessagePipeline.PipelineStage<String, 
     }
 
     @Override
-    public UnresolvedMessage<String> apply(String message, PlaceholderContext ctx) {
+    public UnresolvedMessage<String> apply(String message, PipelineContext ctx) {
         return parse(message);
     }
 

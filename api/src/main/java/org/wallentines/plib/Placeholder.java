@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
-public record Placeholder<T, P>(String name, Class<T> clazz, BiPredicate<Class<?>, PlaceholderContext> checker, PlaceholderSupplier<T, P> supplier, @Nullable ParameterTransformer<P> transformer) {
+public record Placeholder<T, P>(String name, Class<T> clazz, BiPredicate<Class<?>, PipelineContext> checker, PlaceholderSupplier<T, P> supplier, @Nullable ParameterTransformer<P> transformer) {
 
     public Placeholder(String name, Class<T> clazz, PlaceholderSupplier<T, P> supplier, @Nullable ParameterTransformer<P> transformer) {
         this(name, clazz, (other, ctx) -> clazz.isAssignableFrom(other), supplier, transformer);
@@ -16,7 +16,7 @@ public record Placeholder<T, P>(String name, Class<T> clazz, BiPredicate<Class<?
         return new Placeholder<>(name, clazz, supplier, null);
     }
 
-    public boolean canResolve(Class<?> other, PlaceholderContext context) {
+    public boolean canResolve(Class<?> other, PipelineContext context) {
         return checker.test(other, context);
     }
 

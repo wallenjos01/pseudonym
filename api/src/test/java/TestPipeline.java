@@ -1,7 +1,7 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.wallentines.plib.MessagePipeline;
-import org.wallentines.plib.PlaceholderContext;
+import org.wallentines.plib.PipelineContext;
 
 public class TestPipeline {
 
@@ -12,7 +12,7 @@ public class TestPipeline {
                 .add(Object::toString)
                 .build();
 
-        String str = pipeline.accept(3, new PlaceholderContext());
+        String str = pipeline.accept(3, new PipelineContext());
         Assertions.assertEquals("3", str);
     }
 

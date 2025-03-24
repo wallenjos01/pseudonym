@@ -5,7 +5,7 @@ import org.wallentines.mdcfg.ConfigSection;
 import org.wallentines.mdcfg.codec.FileCodecRegistry;
 import org.wallentines.mdcfg.codec.FileWrapper;
 import org.wallentines.mdcfg.serializer.ConfigContext;
-import org.wallentines.plib.PlaceholderContext;
+import org.wallentines.plib.PipelineContext;
 import org.wallentines.plib.UnresolvedMessage;
 
 import java.nio.file.Path;
@@ -33,7 +33,7 @@ public interface LangProvider {
             for(String key : sec.getKeys()) {
                 ConfigObject obj = sec.get(key);
                 if(!obj.isString()) continue;
-                messages.put(key, manager.parser.accept(obj.asString(), PlaceholderContext.of(manager)));
+                messages.put(key, manager.parser.accept(obj.asString(), PipelineContext.of(manager)));
             }
 
             return Optional.of(new LangRegistry(Map.copyOf(messages)));

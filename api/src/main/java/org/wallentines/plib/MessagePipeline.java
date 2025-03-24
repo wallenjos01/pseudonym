@@ -31,8 +31,13 @@ public class MessagePipeline<I, O> {
                 .build();
     }
 
+
+    public O accept(I message) {
+        return accept(message, PipelineContext.EMPTY);
+    }
+
     @SuppressWarnings("unchecked")
-    public O accept(I message, PlaceholderContext ctx) {
+    public O accept(I message, PipelineContext ctx) {
         Object obj = message;
         for(PipelineStage<?, ?> stage : stages) {
             obj = apply(stage, obj, ctx);
@@ -41,7 +46,7 @@ public class MessagePipeline<I, O> {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> Object apply(PipelineStage<T, ?> stage, Object message, PlaceholderContext ctx) {
+    private <T> Object apply(PipelineStage<T, ?> stage, Object message, PipelineContext ctx) {
         return stage.apply((T) message, ctx);
     }
 
@@ -50,7 +55,7 @@ public class MessagePipeline<I, O> {
     }
 
     public interface PipelineStage<I, O> {
-        O apply(I message, PlaceholderContext ctx);
+        O apply(I message, PipelineContext ctx);
     }
 
     public static class Builder<I, O> {

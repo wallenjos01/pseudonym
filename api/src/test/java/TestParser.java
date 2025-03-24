@@ -29,7 +29,7 @@ public class TestParser {
     public void worksWithNoPlaceholders() {
 
         String toParse = "Hello";
-        String resolved = pipeline.accept(toParse, new PlaceholderContext());
+        String resolved = pipeline.accept(toParse, new PipelineContext());
 
         Assertions.assertEquals(toParse, resolved);
     }
@@ -38,7 +38,7 @@ public class TestParser {
     public void worksWithSinglePlaceholder() {
 
         String toParse = "Hello, <name>";
-        String resolved = pipeline.accept(toParse, new PlaceholderContext());
+        String resolved = pipeline.accept(toParse, new PipelineContext());
 
         Assertions.assertEquals("Hello, World", resolved);
     }
@@ -46,7 +46,7 @@ public class TestParser {
     @Test
     public void worksWithMultiplePlaceholders() {
         String toParse = "<greeting> <name>";
-        String resolved = pipeline.accept(toParse, new PlaceholderContext());
+        String resolved = pipeline.accept(toParse, new PipelineContext());
 
         Assertions.assertEquals("Hello, World", resolved);
     }
@@ -54,7 +54,7 @@ public class TestParser {
     @Test
     public void worksWithParameter() {
         String toParse = "<to_upper>hello</to_upper>";
-        String resolved = pipeline.accept(toParse, new PlaceholderContext());
+        String resolved = pipeline.accept(toParse, new PipelineContext());
 
         Assertions.assertEquals("HELLO", resolved);
     }
@@ -62,7 +62,7 @@ public class TestParser {
     @Test
     public void worksWithNestedPlaceholder() {
         String toParse = "<to_upper><name></to_upper>";
-        String resolved = pipeline.accept(toParse, new PlaceholderContext());
+        String resolved = pipeline.accept(toParse, new PipelineContext());
 
         Assertions.assertEquals("WORLD", resolved);
     }
@@ -70,7 +70,7 @@ public class TestParser {
     @Test
     public void worksWithMultipleNestedPlaceholders() {
         String toParse = "<to_upper><greeting> <name></to_upper>";
-        String resolved = pipeline.accept(toParse, new PlaceholderContext());
+        String resolved = pipeline.accept(toParse, new PipelineContext());
 
         Assertions.assertEquals("HELLO, WORLD", resolved);
     }
@@ -78,7 +78,7 @@ public class TestParser {
     @Test
     public void worksWithMultipleNestedParametrizedPlaceholders() {
         String toParse = "<to_upper><reverse><greeting> <name></reverse></to_upper>";
-        String resolved = pipeline.accept(toParse, new PlaceholderContext());
+        String resolved = pipeline.accept(toParse, new PipelineContext());
 
         Assertions.assertEquals("DLROW ,OLLEH", resolved);
     }
@@ -86,7 +86,7 @@ public class TestParser {
     @Test
     public void breaksWithWrongOrder() {
         String toParse = "<reverse><to_upper><greeting> <name></reverse></to_upper>";
-        String resolved = pipeline.accept(toParse, new PlaceholderContext());
+        String resolved = pipeline.accept(toParse, new PipelineContext());
 
         Assertions.assertEquals(">ESREVER/<DLROW ,OLLEH", resolved);
     }

@@ -26,7 +26,7 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
 
     @Override
     @SuppressWarnings("unchecked")
-    public T apply(UnresolvedMessage<List<T>> message, PlaceholderContext ctx) {
+    public T apply(UnresolvedMessage<List<T>> message, PipelineContext ctx) {
 
         T out = null;
         T appendTo = null;
@@ -81,7 +81,7 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
         return out;
     }
 
-    private <O> Optional<T> resolve(PlaceholderContext ctx, PlaceholderInstance<T, O> cmp) {
+    private <O> Optional<T> resolve(PipelineContext ctx, PlaceholderInstance<T, O> cmp) {
         return cmp.parent().resolve(new ResolveContext<>(ctx, cmp.param()));
     }
 

@@ -4,17 +4,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class PlaceholderContext {
+public class PipelineContext {
 
     private final List<Object> values;
     private final Map<Class<?>, List<Object>> valuesByClass;
 
-    public PlaceholderContext() {
+    public static final PipelineContext EMPTY = new PipelineContext();
+
+    public PipelineContext() {
         this.values = Collections.emptyList();
         this.valuesByClass = Collections.emptyMap();
     }
 
-    public PlaceholderContext(List<Object> values) {
+    public PipelineContext(List<Object> values) {
         this.values = values;
         this.valuesByClass = values.stream().collect(Collectors.groupingBy(Object::getClass));
     }
@@ -32,13 +34,16 @@ public class PlaceholderContext {
         return getByClass(clazz).findFirst();
     }
 
-    public PlaceholderContext and(PlaceholderContext other) {
-        return new PlaceholderContext(Stream.concat(values.stream(), other.values.stream()).toList());
+    public PipelineContext and(PipelineContext other) {
+        if(other == EMPTY) return this;
+        if(this == EMPTY) return other;
+        if(this == other) return this;
+        return new PipelineContext(Stream.concat(values.stream(), other.values.stream()).toList());
     }
 
 
-    public static PlaceholderContext of(Object... values) {
-        return new PlaceholderContext(List.of(values));
+    public static PipelineContext of(Object... values) {
+        return new PipelineContext(List.of(values));
     }
 
     public static Builder builder() {
@@ -71,8 +76,8 @@ public class PlaceholderContext {
             return this;
         }
 
-        public PlaceholderContext build() {
-            return new PlaceholderContext(values);
+        public PipelineContext build() {
+            return new PipelineContext(values);
         }
 
     }

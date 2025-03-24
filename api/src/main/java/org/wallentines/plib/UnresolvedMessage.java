@@ -6,10 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public record UnresolvedMessage<T>(List<Either<T, PlaceholderInstance<?, ?>>> parts) {
+public record UnresolvedMessage<T>(List<Either<T, PlaceholderInstance<?, ?>>> parts, PipelineContext context) {
 
-    public static String resolve(UnresolvedMessage<String> msg, PlaceholderContext ctx) {
-        return MessagePipeline.RESOLVE_STRING.accept(msg, ctx);
+    public UnresolvedMessage(List<Either<T, PlaceholderInstance<?, ?>>> parts) {
+        this(parts, PipelineContext.EMPTY);
+    }
+
+    public static String resolve(UnresolvedMessage<String> msg, PipelineContext ctx) {
+        return MessagePipeline.RESOLVE_STRING.accept(msg, msg.context.and(ctx));
     }
 
     public <O> UnresolvedMessage<O> map(Function<T, O> mapper) {
@@ -21,7 +25,7 @@ public record UnresolvedMessage<T>(List<Either<T, PlaceholderInstance<?, ?>>> pa
                 out.add(Either.right(part.rightOrThrow()));
             }
         }
-        return new UnresolvedMessage<>(List.copyOf(out));
+        return new UnresolvedMessage<>(List.copyOf(out), context);
     }
 
     @SuppressWarnings("unchecked")
@@ -30,7 +34,7 @@ public record UnresolvedMessage<T>(List<Either<T, PlaceholderInstance<?, ?>>> pa
         for(Either<T, PlaceholderInstance<?, ?>> part : parts()) {
             if(part.hasLeft()) {
                 out.add(Either.left(part.leftOrThrow()));
-            } else if(part.rightOrThrow().parent().canResolve(clazz, new PlaceholderContext())) {
+            } else if(part.rightOrThrow().parent().canResolve(clazz, new PipelineContext())) {
 
                 PlaceholderInstance<C, ?> p = (PlaceholderInstance<C, ?>) part.rightOrThrow();
                 out.add(Either.right(mapPlaceholder(toClazz, mapper, p)));

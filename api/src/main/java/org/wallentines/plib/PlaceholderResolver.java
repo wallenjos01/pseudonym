@@ -9,7 +9,8 @@ public record PlaceholderResolver<T>(Class<T> clazz) implements MessagePipeline.
 
     @Override
     @SuppressWarnings("unchecked")
-    public UnresolvedMessage<T> apply(UnresolvedMessage<T> message, PlaceholderContext ctx) {
+    public UnresolvedMessage<T> apply(UnresolvedMessage<T> message, PipelineContext ctx) {
+        ctx = message.context().and(ctx);
         List<Either<T, PlaceholderInstance<?, ?>>> out = new ArrayList<>();
         for(Either<T, PlaceholderInstance<?, ?>> e : message.parts()) {
             if(e.hasLeft() || !e.rightOrThrow().parent().canResolve(clazz, ctx)) {

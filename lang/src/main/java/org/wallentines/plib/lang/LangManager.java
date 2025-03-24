@@ -38,7 +38,7 @@ public class LangManager<T> {
         if(language == null) {
             reg = defaults;
         } else {
-            reg = registries.getOrDefault(findClosestLanguage(language), defaults);
+            reg = getRegistry(findClosestLanguage(language));
         }
         UnresolvedMessage<String> message = reg.registry().get(key);
         if (message == null) {
@@ -48,7 +48,7 @@ public class LangManager<T> {
             }
         }
 
-        return resolver.accept(message, PlaceholderContext.of(args));
+        return resolver.accept(message, PipelineContext.of(args));
     }
 
     public LangRegistry getRegistry(String lang) {
