@@ -82,7 +82,7 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
     }
 
     private <O> Optional<T> resolve(PlaceholderContext ctx, PlaceholderInstance<T, O> cmp) {
-        return cmp.parent().resolve(new ResolveContext<>(ctx, cmp));
+        return cmp.parent().resolve(new ResolveContext<>(ctx, cmp.param()));
     }
 
     public interface Appender<T> {

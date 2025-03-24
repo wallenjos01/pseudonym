@@ -27,10 +27,10 @@ public class TestConfigPipeline {
         manager.register(new Placeholder<>("name", String.class, PlaceholderSupplier.of("World"), null));
         manager.register(new Placeholder<>("greeting", String.class, PlaceholderSupplier.of("Hello,"), null));
         manager.register(new Placeholder<>("to_upper", String.class, ctx ->
-                Optional.of(ctx.placeholder().param().toUpperCase()),
+                Optional.of(ctx.param().toUpperCase()),
                 ParameterTransformer.RESOLVE_EARLY));
         manager.register(new Placeholder<>("reverse", String.class, ctx ->
-                Optional.of(new StringBuilder(ctx.placeholder().param()).reverse().toString()),
+                Optional.of(new StringBuilder(ctx.param()).reverse().toString()),
                 ParameterTransformer.RESOLVE_EARLY));
         manager.register(new Placeholder<>("display_name", Component.class, PlaceholderSupplier.of(displayName), null));
     }
