@@ -1,10 +1,11 @@
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.wallentines.plib.*;
-import org.wallentines.plib.mc.ComponentResolver;
 import org.wallentines.plib.mc.ConfigTextParser;
+import org.wallentines.plib.mc.SplitComponentParser;
 
 import java.util.Optional;
 
@@ -16,7 +17,8 @@ public class TestConfigPipeline {
             .add(new PlaceholderParser(manager))
             .add(PlaceholderResolver.STRING)
             .add(MessageConverter.PARTIAL_JOINER)
-            .add(new ComponentResolver(ConfigTextParser.INSTANCE))
+            .add(new SplitComponentParser(ConfigTextParser.INSTANCE))
+            .add(new HierarchicalAppenderResolver<>(Component.class, (c1, c2) -> ((MutableComponent) c1).append(c2), Component::empty))
             .build();
 
     private final Component displayName = Component.literal("World").withStyle(ChatFormatting.AQUA);

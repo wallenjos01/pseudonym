@@ -1,4 +1,4 @@
-rootProject.name = "placeholderlib"
+rootProject.name = "messagelib"
 
 include("api")
 include("minecraft")
