@@ -12,7 +12,7 @@ public record PlaceholderResolver<T>(Class<T> clazz) implements MessagePipeline.
     public UnresolvedMessage<T> apply(UnresolvedMessage<T> message, PlaceholderContext ctx) {
         List<Either<T, PlaceholderInstance<?, ?>>> out = new ArrayList<>();
         for(Either<T, PlaceholderInstance<?, ?>> e : message.parts()) {
-            if(e.hasLeft() || !e.rightOrThrow().parent().canResolve(clazz)) {
+            if(e.hasLeft() || !e.rightOrThrow().parent().canResolve(clazz, ctx)) {
                 out.add(e);
             } else {
                 PlaceholderInstance<T, ?> inst = (PlaceholderInstance<T, ?>) e.rightOrThrow();

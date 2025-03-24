@@ -18,7 +18,18 @@ public class MessagePipeline<I, O> {
             .add(MessageJoiner.STRING)
             .build();
 
+    public static MessagePipeline<String, UnresolvedMessage<String>> parse(PlaceholderManager manager) {
+        return MessagePipeline.<String>builder()
+                .add(new PlaceholderParser(manager))
+                .build();
+    }
 
+    public static MessagePipeline<String, String> parseAndResolve(PlaceholderManager manager) {
+        return MessagePipeline.<String>builder()
+                .add(new PlaceholderParser(manager))
+                .add(RESOLVE_STRING)
+                .build();
+    }
 
     @SuppressWarnings("unchecked")
     public O accept(I message, PlaceholderContext ctx) {

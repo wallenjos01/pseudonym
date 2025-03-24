@@ -3,16 +3,21 @@ package org.wallentines.plib;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 
-public record Placeholder<T, P>(String name, Class<T> clazz, PlaceholderSupplier<T, P> supplier, @Nullable ParameterTransformer<P> transformer) {
+public record Placeholder<T, P>(String name, Class<T> clazz, BiPredicate<Class<?>, PlaceholderContext> checker, PlaceholderSupplier<T, P> supplier, @Nullable ParameterTransformer<P> transformer) {
+
+    public Placeholder(String name, Class<T> clazz, PlaceholderSupplier<T, P> supplier, @Nullable ParameterTransformer<P> transformer) {
+        this(name, clazz, (other, ctx) -> clazz.isAssignableFrom(other), supplier, transformer);
+    }
 
     static <T> Placeholder<T, Void> of(String name, Class<T> clazz, PlaceholderSupplier<T, Void> supplier) {
         return new Placeholder<>(name, clazz, supplier, null);
     }
 
-    public boolean canResolve(Class<?> other) {
-        return clazz.isAssignableFrom(other);
+    public boolean canResolve(Class<?> other, PlaceholderContext context) {
+        return checker.test(other, context);
     }
 
     public boolean acceptsParameter() {

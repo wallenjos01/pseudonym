@@ -63,7 +63,7 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
 
                 }
 
-            } else if(part.rightOrThrow().parent().canResolve(clazz)) {
+            } else if(part.rightOrThrow().parent().canResolve(clazz, ctx)) {
 
                 PlaceholderInstance<T, ?> inst = (PlaceholderInstance<T, ?>) part.rightOrThrow();
                 Optional<T> pl = resolve(ctx, inst);

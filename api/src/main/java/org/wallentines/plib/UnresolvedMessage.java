@@ -30,7 +30,7 @@ public record UnresolvedMessage<T>(List<Either<T, PlaceholderInstance<?, ?>>> pa
         for(Either<T, PlaceholderInstance<?, ?>> part : parts()) {
             if(part.hasLeft()) {
                 out.add(Either.left(part.leftOrThrow()));
-            } else if(part.rightOrThrow().parent().canResolve(clazz)) {
+            } else if(part.rightOrThrow().parent().canResolve(clazz, new PlaceholderContext())) {
 
                 PlaceholderInstance<C, ?> p = (PlaceholderInstance<C, ?>) part.rightOrThrow();
                 out.add(Either.right(mapPlaceholder(toClazz, mapper, p)));
