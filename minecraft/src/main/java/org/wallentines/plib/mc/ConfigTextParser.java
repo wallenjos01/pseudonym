@@ -199,7 +199,8 @@ public record ConfigTextParser(char colorChar, boolean hexSupport, boolean shado
             currentString.append(':');
             return new Tuples.T2<>(currentStyle, i + 1);
         } else if ((next >= '0' && next <= '9') || (next >= 'a' && next <= 'f')) {
-            return new Tuples.T2<>(currentStyle.withShadowColor(TextColor.fromLegacyFormat(ChatFormatting.getByCode(next)).getValue()), i + 1);
+            int color = TextColor.fromLegacyFormat(ChatFormatting.getByCode(next)).getValue();
+            return new Tuples.T2<>(currentStyle.withShadowColor(0xFF000000 | color), i + 1);
         } else if (hexSupport && next == '#' && i < text.length() - 10) {
             String hex = text.substring(i + 2, i + 10);
             return new Tuples.T2<>(currentStyle.withShadowColor(HexFormat.fromHexDigits(hex)), i + 9);

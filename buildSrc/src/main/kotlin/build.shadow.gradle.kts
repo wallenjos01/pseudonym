@@ -1,4 +1,4 @@
-import buildlogic.Utils;
+import buildlogic.Utils
 import org.gradle.api.component.AdhocComponentWithVariants
 
 plugins {

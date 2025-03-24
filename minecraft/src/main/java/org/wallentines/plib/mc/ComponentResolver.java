@@ -61,7 +61,7 @@ public record ComponentResolver(ConfigTextParser parser) implements MessagePipel
                         out = lastLiteral;
                     }
                     lastLiteral.append(pl.get());
-                };
+                }
             }
         }
 

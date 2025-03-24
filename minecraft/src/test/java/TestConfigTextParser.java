@@ -79,7 +79,7 @@ public class TestConfigTextParser {
         Component cmp = ConfigTextParser.INSTANCE.parse(toParse);
         Assertions.assertEquals(Component.literal("Hello, World")
                 .withStyle(Style.EMPTY.withColor(ChatFormatting.RED)
-                        .withShadowColor(ChatFormatting.GREEN.getColor())), cmp);
+                        .withShadowColor(0xFF000000 | ChatFormatting.GREEN.getColor())), cmp);
     }
     @Test
     public void canParseJustShadowColor() {
@@ -87,7 +87,7 @@ public class TestConfigTextParser {
         Component cmp = ConfigTextParser.INSTANCE.parse(toParse);
         Assertions.assertEquals(Component.literal("Hello, World")
                 .withStyle(Style.EMPTY
-                        .withShadowColor(ChatFormatting.GREEN.getColor())), cmp);
+                        .withShadowColor(0xFF000000 | ChatFormatting.GREEN.getColor())), cmp);
     }
 
     @Test
