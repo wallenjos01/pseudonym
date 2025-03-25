@@ -1,7 +1,6 @@
 package org.wallentines.plib.text;
 
 import org.wallentines.mdcfg.Tuples;
-import org.wallentines.plib.Color;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;

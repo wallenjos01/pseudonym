@@ -3,7 +3,6 @@ package org.wallentines.plib.text;
 import org.wallentines.mdcfg.registry.Identifier;
 import org.wallentines.mdcfg.serializer.ObjectSerializer;
 import org.wallentines.mdcfg.serializer.Serializer;
-import org.wallentines.plib.Color;
 
 
 public record Style(Color color, Boolean bold, Boolean italic, Boolean underlined, Boolean strikethrough,

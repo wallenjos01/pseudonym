@@ -1,7 +1,5 @@
 package org.wallentines.plib.text;
 
-import org.wallentines.plib.Color;
-
 import java.util.ArrayList;
 import java.util.List;
 

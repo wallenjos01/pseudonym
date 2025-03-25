@@ -2,7 +2,6 @@ package org.wallentines.plib.text;
 
 import org.wallentines.mdcfg.serializer.InlineSerializer;
 import org.wallentines.mdcfg.serializer.Serializer;
-import org.wallentines.plib.Color;
 
 import java.util.Arrays;
 import java.util.function.Function;

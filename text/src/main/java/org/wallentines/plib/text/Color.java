@@ -1,4 +1,4 @@
-package org.wallentines.plib;
+package org.wallentines.plib.text;
 
 import java.util.Comparator;
 import java.util.HexFormat;

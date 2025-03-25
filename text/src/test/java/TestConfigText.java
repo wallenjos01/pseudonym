@@ -1,6 +1,6 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.wallentines.plib.Color;
+import org.wallentines.plib.text.Color;
 import org.wallentines.plib.text.Component;
 import org.wallentines.plib.text.ConfigTextParser;
 import org.wallentines.plib.text.Style;
