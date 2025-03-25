@@ -1,4 +1,4 @@
-rootProject.name = "messagelib"
+rootProject.name = "pseudonym"
 
 include("api")
 include("lang")

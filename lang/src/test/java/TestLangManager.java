@@ -1,9 +1,9 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.wallentines.plib.*;
-import org.wallentines.plib.lang.LangManager;
-import org.wallentines.plib.lang.LangProvider;
-import org.wallentines.plib.lang.LangRegistry;
+import org.wallentines.pseudonym.*;
+import org.wallentines.pseudonym.lang.LangManager;
+import org.wallentines.pseudonym.lang.LangProvider;
+import org.wallentines.pseudonym.lang.LangRegistry;
 
 import java.util.Map;
 import java.util.Optional;

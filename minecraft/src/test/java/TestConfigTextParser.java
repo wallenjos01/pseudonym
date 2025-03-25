@@ -3,7 +3,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.wallentines.plib.mc.ConfigTextParser;
+import org.wallentines.pseudonym.mc.ConfigTextParser;
 
 public class TestConfigTextParser {
 

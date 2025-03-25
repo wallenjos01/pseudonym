@@ -2,7 +2,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.wallentines.plib.mc.ConfigTextParser;
+import org.wallentines.pseudonym.mc.ConfigTextParser;
 
 public class TestLegacyTextParser {
 

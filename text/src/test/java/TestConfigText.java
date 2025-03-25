@@ -1,10 +1,10 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.wallentines.plib.text.Color;
-import org.wallentines.plib.text.Component;
-import org.wallentines.plib.text.ConfigTextParser;
-import org.wallentines.plib.text.Style;
-import org.wallentines.plib.text.TextColor;
+import org.wallentines.pseudonym.text.Color;
+import org.wallentines.pseudonym.text.Component;
+import org.wallentines.pseudonym.text.ConfigTextParser;
+import org.wallentines.pseudonym.text.Style;
+import org.wallentines.pseudonym.text.TextColor;
 
 
 public class TestConfigText {

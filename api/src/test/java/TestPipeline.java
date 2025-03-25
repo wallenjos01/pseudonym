@@ -1,7 +1,7 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.wallentines.plib.MessagePipeline;
-import org.wallentines.plib.PipelineContext;
+import org.wallentines.pseudonym.MessagePipeline;
+import org.wallentines.pseudonym.PipelineContext;
 
 public class TestPipeline {
 

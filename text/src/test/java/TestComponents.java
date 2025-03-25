@@ -4,9 +4,9 @@ import org.wallentines.mdcfg.ConfigList;
 import org.wallentines.mdcfg.ConfigPrimitive;
 import org.wallentines.mdcfg.ConfigSection;
 import org.wallentines.mdcfg.serializer.ConfigContext;
-import org.wallentines.plib.text.Component;
-import org.wallentines.plib.text.Style;
-import org.wallentines.plib.text.TextColor;
+import org.wallentines.pseudonym.text.Component;
+import org.wallentines.pseudonym.text.Style;
+import org.wallentines.pseudonym.text.TextColor;
 
 public class TestComponents {
 

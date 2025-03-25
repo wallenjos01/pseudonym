@@ -1,6 +1,6 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.wallentines.plib.*;
+import org.wallentines.pseudonym.*;
 
 import java.util.Optional;
 

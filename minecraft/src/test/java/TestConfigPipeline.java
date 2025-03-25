@@ -2,8 +2,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.wallentines.plib.*;
-import org.wallentines.plib.mc.TextUtil;
+import org.wallentines.pseudonym.*;
+import org.wallentines.pseudonym.mc.TextUtil;
 
 import java.util.Optional;
 
