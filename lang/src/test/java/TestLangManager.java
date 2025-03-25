@@ -11,9 +11,8 @@ import java.util.Optional;
 public class TestLangManager {
 
     private final PlaceholderManager manager = new PlaceholderManager();
-    private final MessagePipeline<String, UnresolvedMessage<String>> parser = MessagePipeline.parser(manager);
-    private final LangRegistry defaults;
-    private final LangProvider provider;
+    private final LangRegistry<UnresolvedMessage<String>> defaults;
+    private final LangProvider<UnresolvedMessage<String>> provider;
 
 
     public TestLangManager() {
@@ -26,19 +25,20 @@ public class TestLangManager {
                 Optional.of(new StringBuilder(ctx.param()).reverse().toString()),
                 ParameterTransformer.RESOLVE_EARLY));
 
-        defaults = new LangRegistry(Map.of(
+        MessagePipeline<String, UnresolvedMessage<String>> parser = MessagePipeline.parser(manager);
+        defaults = new LangRegistry<>(Map.of(
                 "message.literal", parser.accept("Hello"),
                 "message.greeting", parser.accept("<greeting> <name>")
         ));
 
-        LangRegistry esp = new LangRegistry(Map.of(
+        LangRegistry<UnresolvedMessage<String>> esp = new LangRegistry<>(Map.of(
                 "message.literal", parser.accept("Hola"),
                 "message.greeting", parser.accept("Hola, <name>")
         ));
 
-        provider = new LangProvider() {
+        provider = new LangProvider<>() {
             @Override
-            public <T> Optional<LangRegistry> get(LangManager<T> manager, String language) {
+            public <R> Optional<LangRegistry<UnresolvedMessage<String>>> get(LangManager<UnresolvedMessage<String>, R> manager, String language) {
                 return Optional.of(esp);
             }
         };
@@ -48,7 +48,7 @@ public class TestLangManager {
     @Test
     public void canReturnDefault() {
 
-        LangManager<String> manager = new LangManager<>(String.class, defaults, provider, parser, MessagePipeline.RESOLVE_STRING);
+        LangManager<UnresolvedMessage<String>, String> manager = new LangManager<>(String.class, defaults, provider, MessagePipeline.RESOLVE_STRING);
 
         String msg = manager.getMessage("message.literal", null);
         Assertions.assertNotNull(msg);
@@ -58,7 +58,7 @@ public class TestLangManager {
     @Test
     public void canResolvePlaceholder() {
 
-        LangManager<String> manager = new LangManager<>(String.class, defaults, provider, parser, MessagePipeline.RESOLVE_STRING);
+        LangManager<UnresolvedMessage<String>, String> manager = new LangManager<>(String.class, defaults, provider, MessagePipeline.RESOLVE_STRING);
 
         String msg = manager.getMessage("message.greeting", null);
         Assertions.assertNotNull(msg);
@@ -68,7 +68,7 @@ public class TestLangManager {
     @Test
     public void canReturnLanguage() {
 
-        LangManager<String> manager = new LangManager<>(String.class, defaults, provider, parser, MessagePipeline.RESOLVE_STRING);
+        LangManager<UnresolvedMessage<String>, String> manager = new LangManager<>(String.class, defaults, provider, MessagePipeline.RESOLVE_STRING);
 
         String msg = manager.getMessage("message.literal", "other");
         Assertions.assertNotNull(msg);
@@ -78,7 +78,7 @@ public class TestLangManager {
     @Test
     public void canResolvePlaceholderForLanguage() {
 
-        LangManager<String> manager = new LangManager<>(String.class, defaults, provider, parser, MessagePipeline.RESOLVE_STRING);
+        LangManager<UnresolvedMessage<String>, String> manager = new LangManager<>(String.class, defaults, provider, MessagePipeline.RESOLVE_STRING);
 
         String msg = manager.getMessage("message.greeting", "other");
         Assertions.assertNotNull(msg);

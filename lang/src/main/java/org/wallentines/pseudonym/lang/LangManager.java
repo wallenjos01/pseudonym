@@ -7,40 +7,41 @@ import java.util.Map;
 import java.util.Optional;
 
 
-public class LangManager<T> {
+public class LangManager<P, R> {
 
-    private final Map<String, LangRegistry> registries = new HashMap<>();
+    private final Map<String, LangRegistry<P>> registries = new HashMap<>();
 
-    private final Class<T> messageClass;
-    private final LangRegistry defaults;
-    private final LangProvider provider;
+    private final Class<R> messageClass;
+    private final LangRegistry<P> defaults;
+    private final LangProvider<P> provider;
 
-    public final MessagePipeline<String, UnresolvedMessage<String>> parser;
-    public final MessagePipeline<UnresolvedMessage<String>, T> resolver;
+    public final MessagePipeline<P, R> resolver;
 
-    private final HashMap<String, String> languageMappings = new HashMap<>();
-
-    public LangManager(Class<T> messageClass, LangRegistry defaults, LangProvider provider, MessagePipeline<String, UnresolvedMessage<String>> parser, MessagePipeline<UnresolvedMessage<String>, T> resolver) {
+    public LangManager(Class<R> messageClass, LangRegistry<P> defaults, LangProvider<P> provider, MessagePipeline<P, R> resolver) {
         this.messageClass = messageClass;
         this.defaults = defaults;
         this.provider = provider;
-        this.parser = parser;
         this.resolver = resolver;
     }
 
-    public Class<T> getMessageClass() {
+    public Class<R> getMessageClass() {
         return messageClass;
     }
 
-    public T getMessage(String key, String language, Object... args) {
 
-        LangRegistry reg;
+    public R getMessage(String key, String language, Object... args) {
+        return getMessage(key, language, PipelineContext.of(args));
+    }
+
+    public R getMessage(String key, String language, PipelineContext context) {
+
+        LangRegistry<P> reg;
         if(language == null) {
             reg = defaults;
         } else {
-            reg = getRegistry(findClosestLanguage(language));
+            reg = getRegistry(language);
         }
-        UnresolvedMessage<String> message = reg.registry().get(key);
+        P message = reg.registry().get(key);
         if (message == null) {
             message = defaults.registry().get(key);
             if(message == null) {
@@ -48,40 +49,15 @@ public class LangManager<T> {
             }
         }
 
-        return resolver.accept(message, PipelineContext.of(args));
+        return resolver.accept(message, context);
     }
 
-    public LangRegistry getRegistry(String lang) {
+    public LangRegistry<P> getRegistry(String lang) {
         return registries.computeIfAbsent(lang, k -> provider.get(this, k).orElse(defaults));
     }
 
     public void clearCache() {
         registries.clear();
-    }
-
-    private String findClosestLanguage(String language) {
-
-        if (language == null) {
-            return null;
-        }
-
-        if (registries.containsKey(language) || !language.contains("_")) {
-            return language;
-        }
-
-        return languageMappings.computeIfAbsent(language, l -> {
-            String lang = l.split("_")[0];
-            for (String key : registries.keySet()) {
-                if (!key.contains("_")) {
-                    continue;
-                }
-                String targetLang = key.split("_")[0];
-                if (lang.equals(targetLang)) {
-                    return key;
-                }
-            }
-            return l;
-        });
     }
 
     @SuppressWarnings("unchecked")
@@ -94,7 +70,7 @@ public class LangManager<T> {
                         .isPresent(),
                 ctx -> {
 
-                    LangManager<?> man = ctx.context().getFirst(LangManager.class).orElse(null);
+                    LangManager<?, ?> man = ctx.context().getFirst(LangManager.class).orElse(null);
                     if (man == null) return Optional.empty();
 
                     String language = ctx.context().getFirst(LocaleHolder.class).map(LocaleHolder::getLanguage).orElse(null);

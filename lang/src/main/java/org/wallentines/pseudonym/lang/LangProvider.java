@@ -5,26 +5,26 @@ import org.wallentines.mdcfg.ConfigSection;
 import org.wallentines.mdcfg.codec.FileCodecRegistry;
 import org.wallentines.mdcfg.codec.FileWrapper;
 import org.wallentines.mdcfg.serializer.ConfigContext;
+import org.wallentines.pseudonym.MessagePipeline;
 import org.wallentines.pseudonym.PipelineContext;
-import org.wallentines.pseudonym.UnresolvedMessage;
 
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public interface LangProvider {
+public interface LangProvider<P> {
 
-    <T> Optional<LangRegistry> get(LangManager<T> manager, String language);
+    <R> Optional<LangRegistry<P>> get(LangManager<P, R> manager, String language);
 
-    static LangProvider forDirectory(Path directory, FileCodecRegistry codecRegistry) {
-        return new Directory(directory, codecRegistry);
+    static <P> LangProvider<P> forDirectory(Path directory, FileCodecRegistry codecRegistry, MessagePipeline<String, P> parser) {
+        return new Directory<P>(directory, codecRegistry, parser);
     }
 
-    record Directory(Path searchDirectory, FileCodecRegistry registry) implements LangProvider {
+    record Directory<P>(Path searchDirectory, FileCodecRegistry registry, MessagePipeline<String, P> parser) implements LangProvider<P> {
 
         @Override
-        public <T> Optional<LangRegistry> get(LangManager<T> manager, String language) {
+        public <R> Optional<LangRegistry<P>> get(LangManager<P, R> manager, String language) {
 
             FileWrapper<ConfigObject> wrapper = registry.find(ConfigContext.INSTANCE, language, searchDirectory);
             if (wrapper == null) return Optional.empty();
@@ -33,14 +33,14 @@ public interface LangProvider {
 
             ConfigSection sec = wrapper.getRoot().asSection();
 
-            Map<String, UnresolvedMessage<String>> messages = new HashMap<>();
+            Map<String, P> messages = new HashMap<>();
             for(String key : sec.getKeys()) {
                 ConfigObject obj = sec.get(key);
                 if(!obj.isString()) continue;
-                messages.put(key, manager.parser.accept(obj.asString(), PipelineContext.of(manager)));
+                messages.put(key, parser.accept(obj.asString(), PipelineContext.of(manager)));
             }
 
-            return Optional.of(new LangRegistry(Map.copyOf(messages)));
+            return Optional.of(new LangRegistry<>(Map.copyOf(messages)));
         }
     }
 

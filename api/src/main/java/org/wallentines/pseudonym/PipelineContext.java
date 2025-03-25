@@ -20,9 +20,20 @@ public class PipelineContext {
     }
 
     public PipelineContext(List<Object> values) {
-        this.values = values;
+
+        List<Object> inValues = new ArrayList<>(values);
+        Map<String, Placeholder<?, ?>> inPlaceholders = new HashMap<>();
+        for(Object value : values) {
+            if(value instanceof Placeholder<?, ?> pl) {
+                inPlaceholders.put(pl.name(), pl);
+            } else {
+                inValues.add(value);
+            }
+        }
+
+        this.values = List.copyOf(inValues);
         this.valuesByClass = values.stream().collect(Collectors.groupingBy(Object::getClass));
-        this.contextPlaceholders = new HashMap<>();
+        this.contextPlaceholders = Map.copyOf(inPlaceholders);
     }
 
     public PipelineContext(List<Object> values, Map<String, Placeholder<?, ?>> contextPlaceholders) {

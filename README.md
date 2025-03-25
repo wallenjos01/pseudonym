@@ -3,6 +3,17 @@
 
 <br/>
 
+## Installation
+```kotlin
+repositories {
+    maven("https://maven.wallentines.org/releases")
+}
+dependencies {
+    implementation("org.wallentines:pseudonym-api:0.1.0-SNAPSHOT")
+}
+```
+
+
 ## Usage
 
 `MessagePipeline<I, O>`: An interface for transforming `I`'s into `O`'s, according to a `PipelineContext` object. They 
@@ -105,8 +116,8 @@ public static void main(String[] args) {
           String.class,
           ctx -> Optional.of(UnresolvedMessage.resolve(ctx.param(), ctx.context()).toUpperCase()),
           ParameterTransformer.IDENTITY));
-    
-    Pipeline<String, String> pipeline = 
+
+    MessagePipeline<String, String> pipeline = 
             MessagePipeline.<String>builder()
                     .add(new PlaceholderParser(manager))
                     .add(new PlaceholderResolver<>(String.class))
@@ -125,3 +136,93 @@ placeholder with that name could be found at parse-time.
 
 <br/>
 
+
+## Language Module
+
+Along with `pseudonym-api`, another module is published: `pseudonym-lang`. This module is meant for managing message
+translations.
+
+`LangRegistry<P>`: A record which contains a map from String keys to a parsed type `P`
+
+`LangProvider<P>`: An interface for loading `LangRegistry<P>`'s from some source. By default, one is provided: 
+`LangProvider.Directory`, which loads language files from a directory using [MidnightConfig](https://github.com/wallenjos01/midnightconfig).
+
+`LangManager<P, R>`: Contains a map from String keys to `LangRegistry<P>`'s, and a pipeline for resolving messages. It 
+also contains a few utility functions for getting messages for specific languages, resolved according to a `PipelineContext`
+
+
+Example:
+```java
+public static void main(String[] args) {
+
+    PlaceholderManager manager = new PlaceholderManager();
+    manager.register(Placeholder.of("name", String.class, ctx -> ctx.getFirst(Player.class).map(Player::name)));
+    manager.register(Placeholder.of(
+            "to_upper",
+            String.class,
+            ctx -> Optional.of(UnresolvedMessage.resolve(ctx.param(), ctx.context()).toUpperCase()),
+            ParameterTransformer.IDENTITY));
+    
+    FileCodecRegistry codecs = new FileCodecRegistry();
+    codecs.register(JSONCodec.fileCodec()); // Requires org.wallentines:midnightcfg-codec-json
+
+    MessagePipeline<String, UnresolvedMessage<String>> parser =
+          MessagePipeline.<String>builder()
+                  .add(new PlaceholderParser(manager))
+                  .build();
+
+    // Assume two files:
+    // - en.json
+    //   { "greeting": "Hello, <name>" }
+    // - es.json
+    //   { "greeting": "Hola, <name>" }
+    LangProvider<UnresolvedMessage<String>> provider = LangProvider.forDirectory(Paths.get("lang"), codecs, parser);
+    
+    MessagePipeline<UnresolvedMessage<String>, String> resolver =
+          MessagePipeline.<String>builder()
+                  .add(new PlaceholderResolver<>(String.class))
+                  .add(new PlaceholderStripper<>())
+                  .add(MessageJoiner.STRING)
+                  .build();
+    
+    LangManager<UnresolvedMessage<String>, String> lang = new LangManager<>(
+            String.class, 
+            LangRegistry.empty(),
+            provider,
+            resolver);
+    
+    PipelineContext ctx = PipelineContext.of(new Player("Steve"));
+    
+    String greetingEn = lang.getMessage("greeting", "en", ctx); // Will be "Hello, Steve"
+    String greetingEs = lang.getMessage("greeting", "es", ctx); // Will be "Hola, Steve"
+}
+```
+
+
+## Usage with Minecraft
+
+This project also contains two other modules: `pseudonym-minecraft` and `pseudonym-text`. 
+- `pseudonum-minecraft` contains tools for applying placeholders to Minecraft's `Component` classes. It is packaged as a 
+  [Fabric](https://fabricmc.net/) mod. It also contains parsers for so-called "legacy text" (ex. `§6Hello`), and "config text"
+  (ex. `&#123ABCHello`). It contains a resolution pipeline specifically tailored to work with this config text.
+- `pseudonym-text` contains a reimplementation of Minecraft's text component system, and is designed for use in
+  projects which need to be compatible with Minecraft text, but do not have Minecraft's classes accessible at runtime.
+  It contains many of the same tools as `pseudonym-minecraft`. These two modules should not be used at the same time.
+
+Example:
+```java
+public static void main(String[] args) {
+
+    PlaceholderManager manager = new PlaceholderManager();
+    manager.register(Placeholder.of("player_name", Component.class, ctx -> ctx.getFirst(Player.class).map(Player::getDisplayName)));
+
+    MessagePipeline<String, Component> pipeline =
+            MessagePipeline.<String>builder()
+                    .add(new PlaceholderParser())
+                    .add(TextUtil.COMPONENT_RESOLVER)
+                    .build();
+    
+    Component out = pipeline.accept("&6Hello, <player_name>"); // Will become {"text":"Hello, ","color":"gold","extra":[{"text":"Steve",...}]}
+    
+}
+```

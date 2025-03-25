@@ -6,9 +6,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import org.wallentines.pseudonym.*;
-import org.wallentines.pseudonym.lang.LangManager;
-import org.wallentines.pseudonym.lang.LangProvider;
-import org.wallentines.pseudonym.lang.LangRegistry;
 
 public final class TextUtil {
 
@@ -21,9 +18,6 @@ public final class TextUtil {
                             Component.class, (c1, c2) -> ((MutableComponent) c1).append(c2), Component::empty))
                     .build();
 
-    public static LangManager<Component> createLangManager(LangRegistry defaults, LangProvider provider, PlaceholderManager placeholderManager) {
-        return new LangManager<>(Component.class, defaults, provider, MessagePipeline.parser(placeholderManager), COMPONENT_RESOLVER);
-    }
 
     public static void registerDefaultPlaceholders(PlaceholderManager manager) {
 
