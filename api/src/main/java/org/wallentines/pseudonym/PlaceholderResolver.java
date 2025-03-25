@@ -9,15 +9,27 @@ public record PlaceholderResolver<T>(Class<T> clazz) implements MessagePipeline.
 
     @Override
     @SuppressWarnings("unchecked")
-    public UnresolvedMessage<T> apply(UnresolvedMessage<T> message, PipelineContext ctx) {
-        ctx = message.context().and(ctx);
+    public UnresolvedMessage<T> apply(UnresolvedMessage<T> message, PipelineContext context) {
+        PipelineContext ctx = message.context().and(context);
         List<Either<T, PlaceholderInstance<?, ?>>> out = new ArrayList<>();
         for(Either<T, PlaceholderInstance<?, ?>> e : message.parts()) {
-            if(e.hasLeft() || !e.rightOrThrow().parent().canResolve(clazz, ctx)) {
+            if(e.hasLeft()) {
                 out.add(e);
             } else {
-                PlaceholderInstance<T, ?> inst = (PlaceholderInstance<T, ?>) e.rightOrThrow();
-                inst.resolve(ctx).ifPresent(t -> out.add(Either.left(t)));
+                PlaceholderInstance<?, ?> pl = e.rightOrThrow();
+                if(pl.parent().type() == Void.class) { // Unknown placeholder. Check context
+                    ctx.getContextPlaceholder(pl.parent().name())
+                            .filter(cpl -> cpl.canResolve(clazz, ctx))
+                            .flatMap(cpl -> ((Placeholder<T, Void>) cpl).resolve(new ResolveContext<>(ctx, null)))
+                            .ifPresent(t -> out.add(Either.left(t))
+                );
+
+                } else if(pl.parent().canResolve(clazz, ctx)) {
+                    PlaceholderInstance<T, ?> inst = (PlaceholderInstance<T, ?>) e.rightOrThrow();
+                    inst.resolve(ctx).ifPresent(t -> out.add(Either.left(t)));
+                } else {
+                    out.add(e);
+                }
             }
         }
         return new UnresolvedMessage<>(List.copyOf(out) );

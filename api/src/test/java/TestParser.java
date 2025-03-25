@@ -91,6 +91,13 @@ public class TestParser {
         Assertions.assertEquals(">ESREVER/<DLROW ,OLLEH", resolved);
     }
 
+    @Test
+    public void worksWithContextPlaceholder() {
 
+        String toParse = "<farewell>";
+        String resolved = pipeline.accept(toParse, PipelineContext.builder().withContextPlaceholder("farewell", "Goodbye").build());
+
+        Assertions.assertEquals("Goodbye", resolved);
+    }
 
 }

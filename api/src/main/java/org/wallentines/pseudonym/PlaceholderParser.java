@@ -40,12 +40,12 @@ public class PlaceholderParser implements MessagePipeline.PipelineStage<String, 
             start = matcher.end(2) + 1;
 
             int tagStart = matcher.start(1);
-            if(tagStart - lastStart > 0) {
+            if (tagStart - lastStart > 0) {
                 parts.add(Either.left(message.substring(lastStart, tagStart - 1)));
             }
 
-            if(!matcher.group(1).isEmpty()) {
-                if(placeholderId.equals(tagName)) {
+            if (!matcher.group(1).isEmpty()) {
+                if (placeholderId.equals(tagName)) {
                     return new Tuples.T2<>(new UnresolvedMessage<>(parts), start);
                 } else {
                     continue;
@@ -54,14 +54,21 @@ public class PlaceholderParser implements MessagePipeline.PipelineStage<String, 
 
 
             Placeholder<?, ?> pl = placeholderManager.get(placeholderId);
-            UnresolvedMessage<String> param = null;
-            if(pl.acceptsParameter()) {
-                Tuples.T2<UnresolvedMessage<String>, Integer> t2 = parseInternal(message, matcher.end(2) + 1, placeholderId);
-                param = t2.p1;
-                start = t2.p2;
-            }
+            if (pl == null) { // Unknown placeholder
 
-            parts.add(Either.right(pl.instantiate(param)));
+                parts.add(Either.right(new Placeholder<Void, Void>(placeholderId, Void.class, (other, ctx) -> false, null, null).instantiate(null)));
+
+            } else {
+
+                UnresolvedMessage<String> param = null;
+                if (pl.acceptsParameter()) {
+                    Tuples.T2<UnresolvedMessage<String>, Integer> t2 = parseInternal(message, matcher.end(2) + 1, placeholderId);
+                    param = t2.p1;
+                    start = t2.p2;
+                }
+
+                parts.add(Either.right(pl.instantiate(param)));
+            }
 
             lastStart = start;
         }

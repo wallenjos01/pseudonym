@@ -5,8 +5,8 @@
 
 ## Usage
 
-`MessagePipeline<I, O>`: An interface for transforming `I`'s into `O`'s, according to a `PipelineContext` object. Can
-be created using the `MessagePipeline.Builder<I, O>` class. For example:
+`MessagePipeline<I, O>`: An interface for transforming `I`'s into `O`'s, according to a `PipelineContext` object. They 
+can be created using the `MessagePipeline.Builder<I, O>` class. For example:
 ```java
 MessagePipeline<Object, String> toStringPipeline = 
         MessagePipeline.<String>builder()
@@ -100,6 +100,11 @@ public static void main(String[] args) {
     
     PlaceholderManager manager = new PlaceholderManager();
     manager.register(Placeholder.of("name", String.class, ctx -> ctx.getFirst(Player.class).map(Player::name)));
+    manager.register(Placeholder.of(
+          "to_upper",
+          String.class,
+          ctx -> Optional.of(UnresolvedMessage.resolve(ctx.param(), ctx.context()).toUpperCase()),
+          ParameterTransformer.IDENTITY));
     
     Pipeline<String, String> pipeline = 
             MessagePipeline.<String>builder()
@@ -109,9 +114,14 @@ public static void main(String[] args) {
                     .add(MessageJoiner.STRING)
                     .build();
     
-    System.out.println(pipeline.accept("Hello, <name>", PipelineContext.of(new Player("Steve")))); // This will print "Hello, Steve"
+    System.out.println(pipeline.accept("Hello, <to_upper><name></to_upper>", PipelineContext.of(new Player("Steve")))); // This will print "Hello, STEVE"
 }
 ```
+
+
+### Context Placeholders
+The `PipelineContext` class contains a `contextPlaceholders` field. The placeholder resolver will look in there if no
+placeholder with that name could be found at parse-time.
 
 <br/>
 

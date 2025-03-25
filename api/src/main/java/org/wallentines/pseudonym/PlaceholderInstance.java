@@ -14,7 +14,6 @@ public record PlaceholderInstance<T, P>(Placeholder<T, P> parent, @Nullable P pa
     public <O> PlaceholderInstance<O, P> map(Class<O> clazz, Function<T, O> mapper) {
 
         return new PlaceholderInstance<>(parent.map(clazz, mapper), param);
-
     }
 
 
