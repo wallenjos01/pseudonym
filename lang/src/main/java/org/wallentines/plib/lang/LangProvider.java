@@ -17,6 +17,10 @@ public interface LangProvider {
 
     <T> Optional<LangRegistry> get(LangManager<T> manager, String language);
 
+    static LangProvider forDirectory(Path directory, FileCodecRegistry codecRegistry) {
+        return new Directory(directory, codecRegistry);
+    }
+
     record Directory(Path searchDirectory, FileCodecRegistry registry) implements LangProvider {
 
         @Override

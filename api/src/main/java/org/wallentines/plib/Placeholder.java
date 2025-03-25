@@ -12,7 +12,7 @@ public record Placeholder<T, P>(String name, Class<T> clazz, BiPredicate<Class<?
         this(name, clazz, (other, ctx) -> clazz.isAssignableFrom(other), supplier, transformer);
     }
 
-    static <T> Placeholder<T, Void> of(String name, Class<T> clazz, PlaceholderSupplier<T, Void> supplier) {
+    public static <T> Placeholder<T, Void> of(String name, Class<T> clazz, PlaceholderSupplier<T, Void> supplier) {
         return new Placeholder<>(name, clazz, supplier, null);
     }
 

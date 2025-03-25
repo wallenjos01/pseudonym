@@ -1,5 +1,8 @@
 {
   "schemaVersion": 1,
   "id": "${id}",
-  "version": "${version}"
+  "version": "${version}",
+  "mixins": [
+    "messagelib.mixins.json"
+  ]
 }

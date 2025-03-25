@@ -11,7 +11,7 @@ import java.util.Optional;
 public class TestLangManager {
 
     private final PlaceholderManager manager = new PlaceholderManager();
-    private final MessagePipeline<String, UnresolvedMessage<String>> parser = MessagePipeline.parse(manager);
+    private final MessagePipeline<String, UnresolvedMessage<String>> parser = MessagePipeline.parser(manager);
     private final LangRegistry defaults;
     private final LangProvider provider;
 
