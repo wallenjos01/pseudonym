@@ -1,19 +1,30 @@
-package org.wallentines.pseudonym.mc;
+package org.wallentines.pseudonym.mc.impl;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import org.wallentines.mdcfg.Tuples;
+import org.wallentines.mdcfg.serializer.SerializeContext;
+import org.wallentines.mdcfg.serializer.SerializeResult;
+import org.wallentines.pseudonym.mc.api.ConfigTextParser;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-public record ConfigTextParser(char colorChar, boolean hexSupport, boolean shadowSupport) {
+public record ConfigTextParserImpl(char colorChar, boolean hexSupport, boolean shadowSupport) implements ConfigTextParser {
 
-    public static final ConfigTextParser LEGACY = new ConfigTextParser('\u00A7', false, false);
-    public static final ConfigTextParser INSTANCE = new ConfigTextParser('&', true, true);
+    @Override
+    public <O> SerializeResult<Component> deserialize(SerializeContext<O> ctx, O value) {
+        return ctx.asString(value).flatMap(this::parse);
+    }
 
+    @Override
+    public <O> SerializeResult<O> serialize(SerializeContext<O> ctx, Component component) {
+        return SerializeResult.success(ctx.toString(serialize(component)));
+    }
+
+    @Override
     public String serialize(Component component) {
         return serialize(component, new StringBuilder());
     }
@@ -53,6 +64,7 @@ public record ConfigTextParser(char colorChar, boolean hexSupport, boolean shado
         return out.toString();
     }
 
+    @Override
     public Component parse(String text) {
         List<Component> split = parseSplit(text);
         if(split.isEmpty()) return Component.empty();
@@ -75,6 +87,7 @@ public record ConfigTextParser(char colorChar, boolean hexSupport, boolean shado
         return out;
     }
 
+    @Override
     public List<Component> parseSplit(String text) {
 
         List<Component> out = new ArrayList<>();

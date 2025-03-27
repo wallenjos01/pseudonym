@@ -28,12 +28,12 @@ public record Placeholder<T, P>(String name, Class<T> type, BiPredicate<Class<?>
         return transformer != null;
     }
 
-    public PlaceholderInstance<T, P> instantiate(UnresolvedMessage<String> parameter) {
+    public PlaceholderInstance<T, P> instantiate(UnresolvedMessage<String> parameter, PlaceholderManager holder) {
         P param = null;
         if(transformer != null) {
             param = transformer.transform(parameter);
         }
-        return new PlaceholderInstance<>(this, param);
+        return new PlaceholderInstance<>(this, param, holder);
     }
 
     public Optional<T> resolve(ResolveContext<P> context) {

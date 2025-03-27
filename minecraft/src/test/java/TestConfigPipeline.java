@@ -3,7 +3,7 @@ import net.minecraft.network.chat.Component;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.wallentines.pseudonym.*;
-import org.wallentines.pseudonym.mc.TextUtil;
+import org.wallentines.pseudonym.mc.api.ServerPlaceholders;
 
 import java.util.Optional;
 
@@ -13,7 +13,7 @@ public class TestConfigPipeline {
 
     private final MessagePipeline<String, Component> pipeline = MessagePipeline.<String>builder()
             .add(new PlaceholderParser(manager))
-            .add(TextUtil.COMPONENT_RESOLVER)
+            .add(ServerPlaceholders.COMPONENT_RESOLVER)
             .build();
 
     private final Component displayName = Component.literal("World").withStyle(ChatFormatting.AQUA);

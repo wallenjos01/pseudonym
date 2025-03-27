@@ -48,7 +48,11 @@ public class PipelineContext {
 
     @SuppressWarnings("unchecked")
     public <T> Stream<T> getByClass(Class<T> clazz) {
-        return (Stream<T>) valuesByClass.get(clazz).stream();
+        List<Object> values = valuesByClass.get(clazz);
+        if (values == null) {
+            return Stream.empty();
+        }
+        return (Stream<T>) values.stream();
     }
 
     public <T> Optional<T> getFirst(Class<T> clazz) {
@@ -69,9 +73,22 @@ public class PipelineContext {
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
+    public PipelineContext and(Stream<PipelineContext> other) {
+        if(other == EMPTY) return this;
+        if(this == EMPTY) return this;
+        if(this == other) return this;
+
+        List<PipelineContext> contexts = other.toList();
+        return new PipelineContext(
+                Stream.concat(values.stream(), contexts.stream().flatMap(c -> c.values().stream())).toList(),
+                Stream.concat(contextPlaceholders.entrySet().stream(), contexts.stream().flatMap(c -> c.contextPlaceholders.entrySet().stream()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+    }
+
 
     public static PipelineContext of(Object... values) {
-        return new PipelineContext(List.of(values));
+        if(values == null || values.length == 0) return EMPTY;
+        return new PipelineContext(Arrays.stream(values).filter(Objects::nonNull).toList());
     }
 
     public static Builder builder() {

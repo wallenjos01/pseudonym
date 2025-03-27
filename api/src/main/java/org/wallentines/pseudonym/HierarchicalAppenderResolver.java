@@ -2,7 +2,9 @@ package org.wallentines.pseudonym;
 
 import org.wallentines.mdcfg.Either;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -26,7 +28,10 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
 
     @Override
     @SuppressWarnings("unchecked")
-    public T apply(UnresolvedMessage<List<T>> message, PipelineContext ctx) {
+    public T apply(UnresolvedMessage<List<T>> message, PipelineContext context) {
+
+        PipelineContext ctx = message.context().and(context);
+        Map<PlaceholderManager, PipelineContext> contexts = new HashMap<>();
 
         T out = null;
         T appendTo = null;
@@ -66,7 +71,9 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
             } else if(part.rightOrThrow().parent().canResolve(clazz, ctx)) {
 
                 PlaceholderInstance<T, ?> inst = (PlaceholderInstance<T, ?>) part.rightOrThrow();
-                Optional<T> pl = resolve(ctx, inst);
+                PipelineContext finalContext = contexts.computeIfAbsent(inst.holder(), man -> ctx.and(man.getContext()));
+
+                Optional<T> pl = resolve(finalContext, inst);
 
                 if(pl.isPresent()) {
                     if(appendTo == null) {

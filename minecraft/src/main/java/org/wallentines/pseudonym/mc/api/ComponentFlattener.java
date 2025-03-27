@@ -1,4 +1,4 @@
-package org.wallentines.pseudonym.mc;
+package org.wallentines.pseudonym.mc.api;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.PlainTextContents;

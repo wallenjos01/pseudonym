@@ -56,7 +56,7 @@ public class PlaceholderParser implements MessagePipeline.PipelineStage<String, 
             Placeholder<?, ?> pl = placeholderManager.get(placeholderId);
             if (pl == null) { // Unknown placeholder
 
-                parts.add(Either.right(new Placeholder<Void, Void>(placeholderId, Void.class, (other, ctx) -> false, null, null).instantiate(null)));
+                parts.add(Either.right(new Placeholder<Void, Void>(placeholderId, Void.class, (other, ctx) -> false, null, null).instantiate(null, placeholderManager)));
 
             } else {
 
@@ -67,7 +67,7 @@ public class PlaceholderParser implements MessagePipeline.PipelineStage<String, 
                     start = t2.p2;
                 }
 
-                parts.add(Either.right(pl.instantiate(param)));
+                parts.add(Either.right(pl.instantiate(param, placeholderManager)));
             }
 
             lastStart = start;
