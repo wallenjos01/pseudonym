@@ -27,7 +27,7 @@ public class ServerPlaceholdersImpl {
                 ctx -> ctx.context().getFirst(ServerPlayer.class).map(Entity::getStringUUID)));
 
         ServerPlaceholdersImpl.GLOBAL_PLACEHOLDERS.register(Placeholder.of("player_name", Component.class,
-                ctx -> ctx.context().getFirst(ServerPlayer.class).map(ServerPlayer::getName)));
+                ctx -> ctx.context().getFirst(ServerPlayer.class).map(ServerPlayer::getDisplayName)));
 
         ServerPlaceholdersImpl.GLOBAL_PLACEHOLDERS.register(Placeholder.of("server_online_players", String.class,
                 ctx -> ctx.context().getFirst(MinecraftServer.class).map(MinecraftServer::getPlayerCount).map(Object::toString)));

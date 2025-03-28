@@ -21,7 +21,7 @@ public class PipelineContext {
 
     public PipelineContext(List<Object> values) {
 
-        List<Object> inValues = new ArrayList<>(values);
+        List<Object> inValues = new ArrayList<>();
         Map<String, Placeholder<?, ?>> inPlaceholders = new HashMap<>();
         for(Object value : values) {
             if(value instanceof Placeholder<?, ?> pl) {
@@ -32,13 +32,13 @@ public class PipelineContext {
         }
 
         this.values = List.copyOf(inValues);
-        this.valuesByClass = values.stream().collect(Collectors.groupingBy(Object::getClass));
+        this.valuesByClass = new HashMap<>(values.stream().collect(Collectors.groupingBy(Object::getClass)));
         this.contextPlaceholders = Map.copyOf(inPlaceholders);
     }
 
     public PipelineContext(List<Object> values, Map<String, Placeholder<?, ?>> contextPlaceholders) {
         this.values = values;
-        this.valuesByClass = values.stream().collect(Collectors.groupingBy(Object::getClass));
+        this.valuesByClass = new HashMap<>(values.stream().collect(Collectors.groupingBy(Object::getClass)));
         this.contextPlaceholders = contextPlaceholders;
     }
 
@@ -50,7 +50,19 @@ public class PipelineContext {
     public <T> Stream<T> getByClass(Class<T> clazz) {
         List<Object> values = valuesByClass.get(clazz);
         if (values == null) {
-            return Stream.empty();
+            for(Object value : this.values) {
+                if(clazz.isAssignableFrom(value.getClass())) {
+                    valuesByClass.compute(clazz, (k,v) -> {
+                        if(v == null) v = new ArrayList<>();
+                        v.add(value);
+                        return v;
+                    });
+                }
+            }
+            values = valuesByClass.get(clazz);
+            if(values == null) {
+                return Stream.empty();
+            }
         }
         return (Stream<T>) values.stream();
     }

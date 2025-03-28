@@ -27,7 +27,7 @@ public class MixinMinecraftServer {
         pseudonym$placeholderManager = new PlaceholderManager(PipelineContext.of(this), List.of(ServerPlaceholders.getGlobalPlaceholders()));
     }
 
-    PlaceholderManager pseudonym$getPlaceholderManager() {
+    public PlaceholderManager pseudonym$getPlaceholderManager() {
         return pseudonym$placeholderManager;
     }
 

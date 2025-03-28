@@ -4,5 +4,11 @@
   "version": "${version}",
   "mixins": [
     "messagelib.mixins.json"
-  ]
+  ],
+  "depends": {
+    "midnightcfg": "*"
+  },
+  "suggests": {
+    "databridge": "*"
+  }
 }

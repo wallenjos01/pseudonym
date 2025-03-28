@@ -32,7 +32,7 @@ public record PlaceholderResolver<T>(Class<T> clazz) implements MessagePipeline.
 
                 } else if(pl.parent().canResolve(clazz, ctx)) {
                     PlaceholderInstance<T, ?> inst = (PlaceholderInstance<T, ?>) e.rightOrThrow();
-                    inst.resolve(ctx).ifPresent(t -> out.add(Either.left(t)));
+                    inst.resolve(finalContext).ifPresent(t -> out.add(Either.left(t)));
                 } else {
                     out.add(e);
                 }
