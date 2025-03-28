@@ -30,6 +30,7 @@ public class PlaceholderManager {
         int index = 0;
         while(out == null && index < parents.size()) {
             out = parents.get(index).get(name);
+            index++;
         }
         return out;
     }

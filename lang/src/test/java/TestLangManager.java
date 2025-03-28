@@ -50,7 +50,7 @@ public class TestLangManager {
 
         LangManager<UnresolvedMessage<String>, String> manager = new LangManager<>(String.class, defaults, provider, MessagePipeline.RESOLVE_STRING);
 
-        String msg = manager.getMessage("message.literal", null);
+        String msg = manager.getMessage("message.literal");
         Assertions.assertNotNull(msg);
         Assertions.assertEquals("Hello", msg);
     }
@@ -60,7 +60,7 @@ public class TestLangManager {
 
         LangManager<UnresolvedMessage<String>, String> manager = new LangManager<>(String.class, defaults, provider, MessagePipeline.RESOLVE_STRING);
 
-        String msg = manager.getMessage("message.greeting", null);
+        String msg = manager.getMessage("message.greeting");
         Assertions.assertNotNull(msg);
         Assertions.assertEquals("Hello, World", msg);
     }

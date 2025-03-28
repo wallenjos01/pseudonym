@@ -33,12 +33,16 @@ public class LangManager<P, R> {
         return getMessage(key, ctx.getFirst(LocaleHolder.class).map(LocaleHolder::getLanguage).orElse(null), ctx);
     }
 
-
     public R getMessage(String key, String language, Object... args) {
-        return getMessage(key, language, PipelineContext.of(args));
+        return getMessageFor(key, language, PipelineContext.of(args));
     }
 
-    public R getMessage(String key, String language, PipelineContext context) {
+
+    public R getMessageFor(String key, PipelineContext context) {
+        return getMessageFor(key, context.getFirst(LocaleHolder.class).map(LocaleHolder::getLanguage).orElse(null), context);
+    }
+
+    public R getMessageFor(String key, String language, PipelineContext context) {
 
         LangRegistry<P> reg;
         if(language == null) {
