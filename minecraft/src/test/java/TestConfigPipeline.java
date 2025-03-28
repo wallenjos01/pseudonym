@@ -166,4 +166,20 @@ public class TestConfigPipeline {
                         ),
                 parsed);
     }
+
+
+
+    @Test
+    public void canProperlyOrderPlaceholders() {
+
+        String toParse = "&e<display_name> is named <display_name>";
+        Component parsed = pipeline.accept(toParse, new PipelineContext());
+
+        Assertions.assertEquals(
+                Component.empty().withStyle(ChatFormatting.YELLOW)
+                        .append(displayName.copy())
+                        .append(Component.literal(" is named "))
+                        .append(displayName.copy()),
+                parsed);
+    }
 }

@@ -27,8 +27,7 @@ public record PlaceholderResolver<T>(Class<T> clazz) implements MessagePipeline.
                     ctx.getContextPlaceholder(pl.parent().name())
                             .filter(cpl -> cpl.canResolve(clazz, ctx))
                             .flatMap(cpl -> ((Placeholder<T, Void>) cpl).resolve(new ResolveContext<>(finalContext, null)))
-                            .ifPresent(t -> out.add(Either.left(t))
-                );
+                            .ifPresentOrElse(t -> out.add(Either.left(t)), () -> out.add(Either.right(pl)));
 
                 } else if(pl.parent().canResolve(clazz, ctx)) {
                     PlaceholderInstance<T, ?> inst = (PlaceholderInstance<T, ?>) e.rightOrThrow();

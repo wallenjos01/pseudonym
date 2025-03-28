@@ -39,6 +39,11 @@ public class ServerPlaceholdersImpl {
         }
 
         @Override
+        public Component copy(Component other) {
+            return other.copy();
+        }
+
+        @Override
         public boolean influencesChildren(Component message) {
             return message.getStyle() != Style.EMPTY || !message.getSiblings().isEmpty();
         }

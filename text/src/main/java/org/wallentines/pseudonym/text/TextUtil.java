@@ -23,6 +23,11 @@ public class TextUtil {
         }
 
         @Override
+        public Component copy(Component other) {
+            return other.copy();
+        }
+
+        @Override
         public boolean influencesChildren(Component message) {
             return message.style() != Style.EMPTY || !message.children().isEmpty();
         }

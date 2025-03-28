@@ -30,7 +30,7 @@ public class LangManager<P, R> {
 
     public R getMessage(String key, Object... args) {
         PipelineContext ctx = PipelineContext.of(args);
-        return getMessage(key, ctx.getFirst(LocaleHolder.class).map(LocaleHolder::getLanguage).orElse(null), ctx);
+        return getMessageFor(key, ctx.getFirst(LocaleHolder.class).map(LocaleHolder::getLanguage).orElse(null), ctx);
     }
 
     public R getMessage(String key, String language, Object... args) {

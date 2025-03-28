@@ -26,12 +26,8 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
     private T getLastChild(T message) {
         List<T> children = this.appender.children(message);
         if(!children.isEmpty()) {
-            for (int i = children.size() - 1; i >= 0; i--) {
-                T child = children.get(i);
-                if (appender.influencesChildren(child)) {
-                    return getLastChild(child);
-                }
-            }
+            T out = getLastChild(children.getLast());
+            if(out != null && this.appender.influencesChildren(out)) return out;
         }
 
         return message;
@@ -81,19 +77,33 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
 
                 }
 
-            } else if(part.rightOrThrow().parent().canResolve(clazz, ctx)) {
+            } else {
 
-                PlaceholderInstance<T, ?> inst = (PlaceholderInstance<T, ?>) part.rightOrThrow();
-                PipelineContext finalContext = contexts.computeIfAbsent(inst.holder(), man -> ctx.and(man.getContext()));
+                PlaceholderInstance<?, ?> pl = part.rightOrThrow();
+                Optional<T> resolved;
 
-                Optional<T> pl = resolve(finalContext, inst);
+                if(pl.parent().type() == Void.class) { // Unknown placeholder. Check context
+                    resolved = ctx.getContextPlaceholder(pl.parent().name())
+                            .filter(cpl -> cpl.canResolve(clazz, ctx))
+                            .flatMap(cpl -> ((Placeholder<T, Void>) cpl).resolve(new ResolveContext<>(ctx, null)));
 
-                if(pl.isPresent()) {
-                    if(appendTo == null) {
-                        appendTo = appender.empty();
-                        out = appendTo;
+                } else if(pl.parent().canResolve(clazz, ctx)) {
+
+                    PlaceholderInstance<T, ?> inst = (PlaceholderInstance<T, ?>) part.rightOrThrow();
+                    PipelineContext finalContext = contexts.computeIfAbsent(inst.holder(), man -> ctx.and(man.getContext()));
+
+                    resolved = resolve(finalContext, inst);
+                } else {
+
+                    resolved = Optional.empty();
+                }
+
+                if(resolved.isPresent()) {
+                    if(out == null) {
+                        out = appender.empty();
+                        appendTo = out;
                     }
-                    appender.append(appendTo, pl.get());
+                    appender.append(appendTo, appender.copy(resolved.get()));
                 }
             }
         }
@@ -112,6 +122,8 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
         List<T> children(T message);
 
         T empty();
+
+        T copy(T other);
 
         boolean influencesChildren(T message);
 
