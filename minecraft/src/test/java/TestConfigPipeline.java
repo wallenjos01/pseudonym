@@ -129,4 +129,41 @@ public class TestConfigPipeline {
                         .append(Component.literal("!")),
                 parsed);
     }
+
+
+    @Test
+    public void canParseColorBeforePlaceholder() {
+
+        String toParse = "&cHello, &f<display_name>!";
+        Component parsed = pipeline.accept(toParse, new PipelineContext());
+
+        Assertions.assertEquals(
+                Component.literal("Hello, ").withStyle(ChatFormatting.RED)
+                        .append(Component.literal("").withStyle(ChatFormatting.WHITE)
+                                .append(displayName.copy())
+                                .append(Component.literal("!"))
+                        ),
+                parsed);
+    }
+
+
+    @Test
+    public void canParseColorBeforePlaceholderTwice() {
+
+        String toParse = "&cHello, &f<display_name>, &a<display_name>!";
+        Component parsed = pipeline.accept(toParse, new PipelineContext());
+
+        Assertions.assertEquals(
+                Component.literal("Hello, ").withStyle(ChatFormatting.RED)
+                        .append(Component.literal("").withStyle(ChatFormatting.WHITE)
+                                .append(displayName.copy())
+                                .append(Component.literal(", ")
+                                        .append(Component.literal("").withStyle(ChatFormatting.GREEN)
+                                                .append(displayName.copy())
+                                                .append(Component.literal("!"))
+                                        )
+                                )
+                        ),
+                parsed);
+    }
 }

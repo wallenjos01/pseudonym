@@ -1,7 +1,6 @@
 package org.wallentines.pseudonym.mc.api;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
 import org.wallentines.pseudonym.*;
 import org.wallentines.pseudonym.mc.impl.ServerPlaceholdersImpl;
@@ -13,8 +12,7 @@ public interface ServerPlaceholders {
                     .add(PlaceholderResolver.STRING)
                     .add(MessageJoiner.STRING_PARTIAL)
                     .add(new SplitComponentParser(ConfigTextParser.INSTANCE))
-                    .add(new HierarchicalAppenderResolver<>(
-                            Component.class, (c1, c2) -> ((MutableComponent) c1).append(c2), Component::empty))
+                    .add(new HierarchicalAppenderResolver<>(Component.class, ServerPlaceholdersImpl.APPENDER))
                     .build();
 
 

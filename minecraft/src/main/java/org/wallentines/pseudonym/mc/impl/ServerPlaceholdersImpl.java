@@ -1,10 +1,14 @@
 package org.wallentines.pseudonym.mc.impl;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import org.wallentines.pseudonym.*;
+
+import java.util.List;
 
 public class ServerPlaceholdersImpl {
 
@@ -17,6 +21,28 @@ public class ServerPlaceholdersImpl {
     public static PlaceholderManager getServerPlaceholders(MinecraftServer server) {
         return ((ServerExtension) server).getPlaceholderManager();
     }
+
+    public static final HierarchicalAppenderResolver.Appender<Component> APPENDER = new HierarchicalAppenderResolver.Appender<Component>() {
+        @Override
+        public Component append(Component to, Component value) {
+            return ((MutableComponent) to).append(value);
+        }
+
+        @Override
+        public List<Component> children(Component message) {
+            return message.getSiblings();
+        }
+
+        @Override
+        public Component empty() {
+            return Component.empty();
+        }
+
+        @Override
+        public boolean influencesChildren(Component message) {
+            return message.getStyle() != Style.EMPTY || !message.getSiblings().isEmpty();
+        }
+    };
 
     static {
 

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * A specialized combination of a PlaceholderResolver, A PlaceholderStripper and a MessageJoiner.
@@ -18,12 +17,24 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
 
     private final Class<T> clazz;
     private final Appender<T> appender;
-    private final Supplier<T> empty;
 
-    public HierarchicalAppenderResolver(Class<T> clazz, Appender<T> appender, Supplier<T> empty) {
+    public HierarchicalAppenderResolver(Class<T> clazz, Appender<T> appender) {
         this.clazz = clazz;
         this.appender = appender;
-        this.empty = empty;
+    }
+
+    private T getLastChild(T message) {
+        List<T> children = this.appender.children(message);
+        if(!children.isEmpty()) {
+            for (int i = children.size() - 1; i >= 0; i--) {
+                T child = children.get(i);
+                if (appender.influencesChildren(child)) {
+                    return getLastChild(child);
+                }
+            }
+        }
+
+        return message;
     }
 
     @Override
@@ -45,24 +56,26 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
                 T first = parsed.getFirst();
                 if(out == null) {
                     out = first;
-                    appendTo = first;
-                } else if(!first.equals(empty.get())) {
-                    appendTo = appender.append(appendTo, first);
+                    appendTo = getLastChild(first);
+                } else if(!first.equals(appender.empty())) {
+                    appendTo = getLastChild(appender.append(appendTo, first));
                 }
 
                 // Back to the top of the hierarchy
                 if(parsed.size() > 1) {
 
-                    if(!out.equals(empty.get())) {
-                        out = appender.append(empty.get(), out);
-                        appendTo = out;
+                    if(!out.equals(appender.empty())) {
+                        T newEmpty = appender.empty();
+                        appender.append(newEmpty, out);
+                        out = newEmpty;
                     }
 
                     for(int i = 1 ; i < parsed.size() ; i++) {
-
                         T next = parsed.get(i);
-                        if(!next.equals(empty.get())) {
-                            appendTo = appender.append(out, next);
+                        if(next.equals(appender.empty())) {
+                            appendTo = out;
+                        } else {
+                            appendTo = getLastChild(appender.append(out, next));
                         }
                     }
 
@@ -77,7 +90,7 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
 
                 if(pl.isPresent()) {
                     if(appendTo == null) {
-                        appendTo = empty.get();
+                        appendTo = appender.empty();
                         out = appendTo;
                     }
                     appender.append(appendTo, pl.get());
@@ -95,6 +108,13 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
     public interface Appender<T> {
 
         T append(T to, T value);
+
+        List<T> children(T message);
+
+        T empty();
+
+        boolean influencesChildren(T message);
+
     }
 
 }
