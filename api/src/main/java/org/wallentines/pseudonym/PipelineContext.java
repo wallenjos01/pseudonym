@@ -109,7 +109,9 @@ public class PipelineContext {
 
     public static Builder builder(Object... values) {
         Builder out = new Builder();
-        out.addAll(List.of(values));
+        if(values != null && values.length > 0) {
+            out.addAll(Arrays.stream(values).filter(Objects::nonNull).toList());
+        }
         return out;
     }
 
