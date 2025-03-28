@@ -23,22 +23,36 @@ public class PipelineContext {
 
         List<Object> inValues = new ArrayList<>();
         Map<String, Placeholder<?, ?>> inPlaceholders = new HashMap<>();
+        Map<Class<?>, List<Object>> inValuesByClass = new HashMap<>();
         for(Object value : values) {
             if(value instanceof Placeholder<?, ?> pl) {
                 inPlaceholders.put(pl.name(), pl);
             } else {
                 inValues.add(value);
+                addWithSuperclasses(inValuesByClass, value.getClass(), value);
             }
         }
 
         this.values = List.copyOf(inValues);
-        this.valuesByClass = new HashMap<>(values.stream().collect(Collectors.groupingBy(Object::getClass)));
+        this.valuesByClass = Map.copyOf(inValuesByClass);
         this.contextPlaceholders = Map.copyOf(inPlaceholders);
     }
 
     public PipelineContext(List<Object> values, Map<String, Placeholder<?, ?>> contextPlaceholders) {
+
+        Map<Class<?>, List<Object>> inValuesByClass = new HashMap<>();
+        for(Object value : values) {
+            addWithSuperclasses(inValuesByClass, value.getClass(), value);
+        }
+
         this.values = values;
-        this.valuesByClass = new HashMap<>(values.stream().collect(Collectors.groupingBy(Object::getClass)));
+        this.valuesByClass = Map.copyOf(inValuesByClass);
+        this.contextPlaceholders = contextPlaceholders;
+    }
+
+    private PipelineContext(List<Object> values, Map<String, Placeholder<?, ?>> contextPlaceholders, Map<Class<?>, List<Object>> valuesByClass) {
+        this.values = values;
+        this.valuesByClass = valuesByClass;
         this.contextPlaceholders = contextPlaceholders;
     }
 
@@ -48,21 +62,11 @@ public class PipelineContext {
 
     @SuppressWarnings("unchecked")
     public <T> Stream<T> getByClass(Class<T> clazz) {
+        if(clazz == Object.class) return (Stream<T>) values().stream();
+
         List<Object> values = valuesByClass.get(clazz);
         if (values == null) {
-            for(Object value : this.values) {
-                if(clazz.isAssignableFrom(value.getClass())) {
-                    valuesByClass.compute(clazz, (k,v) -> {
-                        if(v == null) v = new ArrayList<>();
-                        v.add(value);
-                        return v;
-                    });
-                }
-            }
-            values = valuesByClass.get(clazz);
-            if(values == null) {
-                return Stream.empty();
-            }
+            return Stream.empty();
         }
         return (Stream<T>) values.stream();
     }
@@ -79,10 +83,15 @@ public class PipelineContext {
         if(other == EMPTY) return this;
         if(this == EMPTY) return other;
         if(this == other) return this;
+
+        Map<Class<?>, List<Object>> valuesByClass = new HashMap<>(this.valuesByClass);
+        joinClassCache(valuesByClass, other);
+
         return new PipelineContext(
                 Stream.concat(values.stream(), other.values.stream()).toList(),
                 Stream.concat(contextPlaceholders.entrySet().stream(), other.contextPlaceholders.entrySet().stream())
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
+                valuesByClass);
     }
 
     public PipelineContext and(Stream<PipelineContext> other) {
@@ -91,10 +100,26 @@ public class PipelineContext {
         if(this == other) return this;
 
         List<PipelineContext> contexts = other.toList();
+
+        Map<Class<?>, List<Object>> valuesByClass = new HashMap<>(this.valuesByClass);
+        for(PipelineContext context : contexts) {
+            joinClassCache(valuesByClass, context);
+        }
+
         return new PipelineContext(
                 Stream.concat(values.stream(), contexts.stream().flatMap(c -> c.values().stream())).toList(),
                 Stream.concat(contextPlaceholders.entrySet().stream(), contexts.stream().flatMap(c -> c.contextPlaceholders.entrySet().stream()))
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+    }
+
+    private void joinClassCache(Map<Class<?>, List<Object>> valuesByClass, PipelineContext context) {
+        for(Class<?> c : context.valuesByClass.keySet()) {
+            valuesByClass.compute(c, (k,v) -> {
+                if(v == null) v = new ArrayList<>();
+                v.addAll(context.valuesByClass.get(c));
+                return v;
+            });
+        }
     }
 
 
@@ -141,8 +166,18 @@ public class PipelineContext {
             return this;
         }
 
+        public Builder withContextPlaceholder(String name, PlaceholderSupplier<String, Void> value) {
+            contextPlaceholders.put(name, Placeholder.of(name, String.class, value));
+            return this;
+        }
+
         public <T> Builder withContextPlaceholder(String name, Class<T> clazz, T value) {
             contextPlaceholders.put(name, Placeholder.of(name, clazz, PlaceholderSupplier.of(value)));
+            return this;
+        }
+
+        public <T> Builder withContextPlaceholder(String name, Class<T> clazz, PlaceholderSupplier<T, Void> value) {
+            contextPlaceholders.put(name, Placeholder.of(name, clazz, value));
             return this;
         }
 
@@ -155,6 +190,20 @@ public class PipelineContext {
             return new PipelineContext(values, contextPlaceholders);
         }
 
+    }
+
+    private void addWithSuperclasses(Map<Class<?>, List<Object>> map, Class<?> clazz, Object value) {
+
+        if(clazz == Object.class) return;
+        map.computeIfAbsent(clazz, k -> new ArrayList<>()).add(value);
+
+        Class<?> superclass = clazz.getSuperclass();
+        if (superclass != null) {
+            addWithSuperclasses(map, superclass, value);
+        }
+        for(Class<?> interfaceClass : clazz.getInterfaces()) {
+            addWithSuperclasses(map, interfaceClass, value);
+        }
     }
 
 }
