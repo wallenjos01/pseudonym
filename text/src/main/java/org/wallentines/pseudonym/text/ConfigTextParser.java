@@ -181,7 +181,7 @@ public record ConfigTextParser(char colorChar, boolean hexSupport, boolean shado
             currentString.append(text.charAt(i));
         }
 
-        if (!currentString.isEmpty()) {
+        if (!currentString.isEmpty() || currentStyle != Style.EMPTY) {
             append.accept(Component.text(currentString.toString()).withStyle(currentStyle));
         }
 

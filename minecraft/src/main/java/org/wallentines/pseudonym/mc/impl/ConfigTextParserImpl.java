@@ -195,7 +195,7 @@ public record ConfigTextParserImpl(char colorChar, boolean hexSupport, boolean s
             currentString.append(text.charAt(i));
         }
 
-        if (!currentString.isEmpty()) {
+        if (!currentString.isEmpty() || currentStyle != Style.EMPTY) {
             append.accept(Component.literal(currentString.toString()).withStyle(currentStyle));
         }
 
