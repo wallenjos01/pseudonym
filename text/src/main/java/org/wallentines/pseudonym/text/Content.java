@@ -190,7 +190,7 @@ public interface Content {
             if(id == null) {
                 return SerializeResult.failure("Unregistered type " + value.type());
             }
-            return Type.serialize(context, value).flatMap(o -> context.toMap(Map.of(id, o)));
+            return Type.serialize(context, value);
         }
 
         @Override

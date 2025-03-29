@@ -12,4 +12,6 @@ slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 
 midnightcfg-api = { module = "org.wallentines:midnightcfg-api", version.ref="mdcfg" }
+midnightcfg-codec-json = { module = "org.wallentines:midnightcfg-codec-json", version.ref="mdcfg" }
+midnightcfg-codec-nbt = { module = "org.wallentines:midnightcfg-codec-nbt", version.ref="mdcfg" }
 midnightcfg-minecraft = { module = "org.wallentines:midnightcfg-platform-minecraft", version.ref="mdcfg" }

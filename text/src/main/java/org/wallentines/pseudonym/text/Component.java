@@ -54,13 +54,53 @@ public interface Component {
         private Serializer<Component> internal;
         private Supplier<Serializer<Component>> serializer = () -> {
             if(internal == null) {
-                internal = GroupSerializer.<Component>builder()
-                        .add(Content.SERIALIZER, Component::content)
-                        .add(Style.SERIALIZER, Component::style)
-                        .add(SERIALIZER.listOf().mapToList().optionalFieldOf("extra", Collections.emptyList()), Component::children)
-                        .build(res -> SerializeResult.success(new ImmutableComponent(res.get(0), res.get(1), res.get(2))))
-                        .or(Serializer.STRING.flatMap(c -> "", Component::text))
-                        .or(SERIALIZER.listOf().mapToList().flatMap(List::of, Component::join));
+                internal = new Serializer<Component>() {
+                    @Override
+                    public <O> SerializeResult<Component> deserialize(SerializeContext<O> context, O value) {
+
+                        SerializeResult<Content> content = Content.SERIALIZER.deserialize(context, value);
+                        if(!content.isComplete()) return SerializeResult.failure("Unable to deserialize component content!", content.getError());
+
+                        SerializeResult<Style> style = Style.SERIALIZER.deserialize(context, value);
+                        if(!style.isComplete()) return SerializeResult.failure("Unable to deserialize component style!", content.getError());
+
+                        List<Component> outChildren = Collections.emptyList();
+
+                        O extra = context.get("extra", value);
+                        if(!context.isNull(extra)) {
+                            SerializeResult<List<Component>> children = SERIALIZER.listOf().mapToList().deserialize(context, extra);
+                            if(!children.isComplete()) {
+                                return SerializeResult.failure("Unable to deserialize component children!", children.getError());
+                            }
+                            outChildren = children.getOrThrow();
+                        }
+
+                        return SerializeResult.success(new ImmutableComponent(content.getOrThrow(), style.getOrThrow(), outChildren));
+                    }
+
+                    @Override
+                    public <O> SerializeResult<O> serialize(SerializeContext<O> context, Component value) {
+
+                        SerializeResult<O> content = Content.SERIALIZER.serialize(context, value.content());
+                        if(!content.isComplete()) return SerializeResult.failure("Unable to serialize component content!", content.getError());
+
+                        SerializeResult<O> style = Style.SERIALIZER.serialize(context, value.style());
+                        if(!style.isComplete()) return SerializeResult.failure("Unable to serialize component style!", content.getError());
+
+                        O out = context.merge(content.getOrThrow(), style.getOrThrow());
+                        if(!value.children().isEmpty()) {
+                            SerializeResult<O> children = SERIALIZER.listOf().serialize(context, value.children());
+                            if(!children.isComplete()) {
+                                return SerializeResult.failure("Unable to serialize component children!", children.getError());
+                            }
+                            context.set("extra", children.getOrThrow(), out);
+                        }
+
+                        return SerializeResult.success(out);
+                    }
+                }
+                .or(Serializer.STRING.flatMap(c -> "", Component::text))
+                .or(SERIALIZER.listOf().mapToList().flatMap(List::of, Component::join));
             }
             return internal;
         };
