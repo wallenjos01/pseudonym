@@ -33,8 +33,8 @@ public class TextUtil {
         }
     };
 
-    public static final MessagePipeline<UnresolvedMessage<String>, Component> COMPONENT_RESOLVER =
-            MessagePipeline.<UnresolvedMessage<String>>builder()
+    public static final MessagePipeline<PartialMessage<String>, Component> COMPONENT_RESOLVER =
+            MessagePipeline.<PartialMessage<String>>builder()
                     .add(PlaceholderResolver.STRING)
                     .add(MessageJoiner.STRING_PARTIAL)
                     .add(new SplitComponentParser(ConfigTextParser.INSTANCE))

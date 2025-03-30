@@ -7,12 +7,19 @@ import org.wallentines.pseudonym.mc.impl.ServerPlaceholdersImpl;
 
 public interface ServerPlaceholders {
 
-    MessagePipeline<UnresolvedMessage<String>, Component> COMPONENT_RESOLVER =
-            MessagePipeline.<UnresolvedMessage<String>>builder()
+    MessagePipeline<PartialMessage<String>, Component> COMPONENT_RESOLVER =
+            MessagePipeline.<PartialMessage<String>>builder()
                     .add(PlaceholderResolver.STRING)
                     .add(MessageJoiner.STRING_PARTIAL)
                     .add(new SplitComponentParser(ConfigTextParser.INSTANCE))
                     .add(new HierarchicalAppenderResolver<>(Component.class, ServerPlaceholdersImpl.APPENDER))
+                    .build();
+
+    MessagePipeline<PartialMessage<Component>, Component> PARTIAL_RESOLVER =
+            MessagePipeline.<PartialMessage<Component>>builder()
+                    .add(new PlaceholderResolver<>(Component.class))
+                    .add(new PlaceholderStripper<>())
+                    .add(new ComponentJoiner())
                     .build();
 
 

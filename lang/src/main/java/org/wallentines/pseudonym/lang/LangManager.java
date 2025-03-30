@@ -2,9 +2,7 @@ package org.wallentines.pseudonym.lang;
 
 import org.wallentines.pseudonym.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 public class LangManager<P, R> {
@@ -61,6 +59,14 @@ public class LangManager<P, R> {
         return resolver.accept(message, context);
     }
 
+    public P getParsed(String key, String language) {
+        return getRegistry(language).registry().get(key);
+    }
+
+    public Message<R> message(String key) {
+        return ctx -> getMessageFor(key, ctx);
+    }
+
     public LangRegistry<P> getRegistry(String lang) {
         return registries.computeIfAbsent(lang, k -> provider.get(this, k).orElse(defaults));
     }
@@ -83,7 +89,7 @@ public class LangManager<P, R> {
                     if (man == null) return Optional.empty();
 
                     String language = ctx.context().getFirst(LocaleHolder.class).map(LocaleHolder::getLanguage).orElse(null);
-                    String key = UnresolvedMessage.resolve(ctx.param(), ctx.context());
+                    String key = PartialMessage.resolve(ctx.param(), ctx.context());
                     return Optional.of(man.getMessage(key, language));
 
                 }, ParameterTransformer.IDENTITY));

@@ -28,7 +28,7 @@ public record Placeholder<T, P>(String name, Class<T> type, BiPredicate<Class<?>
         return transformer != null;
     }
 
-    public PlaceholderInstance<T, P> instantiate(UnresolvedMessage<String> parameter, PlaceholderManager holder) {
+    public PlaceholderInstance<T, P> instantiate(PartialMessage<String> parameter, PlaceholderManager holder) {
         P param = null;
         if(transformer != null) {
             param = transformer.transform(parameter);

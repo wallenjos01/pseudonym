@@ -7,6 +7,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import org.wallentines.pseudonym.*;
+import org.wallentines.pseudonym.lang.LangManager;
 
 import java.util.List;
 
@@ -51,21 +52,22 @@ public class ServerPlaceholdersImpl {
 
     static {
 
-        ServerPlaceholdersImpl.GLOBAL_PLACEHOLDERS.register(Placeholder.of("player_username", String.class,
+        GLOBAL_PLACEHOLDERS.register(Placeholder.of("player_username", String.class,
                 ctx -> ctx.context().getFirst(ServerPlayer.class).map(spl -> spl.getGameProfile().getName())));
 
-        ServerPlaceholdersImpl.GLOBAL_PLACEHOLDERS.register(Placeholder.of("player_uuid", String.class,
+        GLOBAL_PLACEHOLDERS.register(Placeholder.of("player_uuid", String.class,
                 ctx -> ctx.context().getFirst(ServerPlayer.class).map(Entity::getStringUUID)));
 
-        ServerPlaceholdersImpl.GLOBAL_PLACEHOLDERS.register(Placeholder.of("player_name", Component.class,
+        GLOBAL_PLACEHOLDERS.register(Placeholder.of("player_name", Component.class,
                 ctx -> ctx.context().getFirst(ServerPlayer.class).map(ServerPlayer::getDisplayName)));
 
-        ServerPlaceholdersImpl.GLOBAL_PLACEHOLDERS.register(Placeholder.of("server_online_players", String.class,
+        GLOBAL_PLACEHOLDERS.register(Placeholder.of("server_online_players", String.class,
                 ctx -> ctx.context().getFirst(MinecraftServer.class).map(MinecraftServer::getPlayerCount).map(Object::toString)));
 
-        ServerPlaceholdersImpl.GLOBAL_PLACEHOLDERS.register(Placeholder.of("server_max_players", String.class,
+        GLOBAL_PLACEHOLDERS.register(Placeholder.of("server_max_players", String.class,
                 ctx -> ctx.context().getFirst(MinecraftServer.class).map(MinecraftServer::getMaxPlayers).map(Object::toString)));
 
+        LangManager.registerPlaceholders(GLOBAL_PLACEHOLDERS);
     }
 
 

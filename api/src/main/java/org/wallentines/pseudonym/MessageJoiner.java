@@ -29,7 +29,7 @@ public interface MessageJoiner<T> extends MessagePipeline.PipelineStage<List<T>,
             out.add(Either.left(currentString.toString()));
         }
 
-        return new UnresolvedMessage<>(List.copyOf(out));
+        return new PartialMessage<>(List.copyOf(out));
     };
 
 }

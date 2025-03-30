@@ -6,17 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public record UnresolvedMessage<T>(List<Either<T, PlaceholderInstance<?, ?>>> parts, PipelineContext context) {
+public record PartialMessage<T>(List<Either<T, PlaceholderInstance<?, ?>>> parts, PipelineContext context) {
 
-    public UnresolvedMessage(List<Either<T, PlaceholderInstance<?, ?>>> parts) {
+    public PartialMessage(List<Either<T, PlaceholderInstance<?, ?>>> parts) {
         this(parts, PipelineContext.EMPTY);
     }
 
-    public static String resolve(UnresolvedMessage<String> msg, PipelineContext ctx) {
+    public static String resolve(PartialMessage<String> msg, PipelineContext ctx) {
         return MessagePipeline.RESOLVE_STRING.accept(msg, msg.context.and(ctx));
     }
 
-    public <O> UnresolvedMessage<O> map(Function<T, O> mapper) {
+    public <O> PartialMessage<O> map(Function<T, O> mapper) {
         List<Either<O, PlaceholderInstance<?, ?>>> out = new ArrayList<>();
         for(Either<T, PlaceholderInstance<?, ?>> part : parts()) {
             if(part.hasLeft()) {
@@ -25,11 +25,11 @@ public record UnresolvedMessage<T>(List<Either<T, PlaceholderInstance<?, ?>>> pa
                 out.add(Either.right(part.rightOrThrow()));
             }
         }
-        return new UnresolvedMessage<>(List.copyOf(out), context);
+        return new PartialMessage<>(List.copyOf(out), context);
     }
 
     @SuppressWarnings("unchecked")
-    public <C, O> UnresolvedMessage<T> mapPlaceholders(Class<C> clazz, Class<O> toClazz, Function<C, O> mapper) {
+    public <C, O> PartialMessage<T> mapPlaceholders(Class<C> clazz, Class<O> toClazz, Function<C, O> mapper) {
         List<Either<T, PlaceholderInstance<?, ?>>> out = new ArrayList<>();
         for(Either<T, PlaceholderInstance<?, ?>> part : parts()) {
             if(part.hasLeft()) {
@@ -42,7 +42,7 @@ public record UnresolvedMessage<T>(List<Either<T, PlaceholderInstance<?, ?>>> pa
                 out.add(Either.right(part.rightOrThrow()));
             }
         }
-        return new UnresolvedMessage<>(List.copyOf(out));
+        return new PartialMessage<>(List.copyOf(out));
     }
 
     private <T1, T2> PlaceholderInstance<T2, ?> mapPlaceholder(Class<T2> clazz, Function<T1, T2> mapper, PlaceholderInstance<T1, ?> msg) {

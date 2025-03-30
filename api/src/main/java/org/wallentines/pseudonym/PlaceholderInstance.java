@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.function.Function;
 
-public record PlaceholderInstance<T, P>(Placeholder<T, P> parent, @Nullable P param, PlaceholderManager holder) {
+public record PlaceholderInstance<T, P>(Placeholder<T, P> parent, @Nullable P param, @Nullable PlaceholderManager holder) {
 
     public Optional<T> resolve(PipelineContext ctx) {
         return parent.resolve(new ResolveContext<>(ctx, param));
@@ -15,5 +15,7 @@ public record PlaceholderInstance<T, P>(Placeholder<T, P> parent, @Nullable P pa
         return new PlaceholderInstance<>(parent.map(clazz, mapper), param, holder);
     }
 
-
+    public PipelineContext getContext() {
+        return holder == null ? PipelineContext.EMPTY : holder.getContext();
+    }
 }

@@ -12,13 +12,13 @@ public class MessagePipeline<I, O> {
         this.stages = stages;
     }
 
-    public static final MessagePipeline<UnresolvedMessage<String>, String> RESOLVE_STRING = MessagePipeline.<UnresolvedMessage<String>>builder()
+    public static final MessagePipeline<PartialMessage<String>, String> RESOLVE_STRING = MessagePipeline.<PartialMessage<String>>builder()
             .add(PlaceholderResolver.STRING)
             .add(new PlaceholderStripper<>())
             .add(MessageJoiner.STRING)
             .build();
 
-    public static MessagePipeline<String, UnresolvedMessage<String>> parser(PlaceholderManager manager) {
+    public static MessagePipeline<String, PartialMessage<String>> parser(PlaceholderManager manager) {
         return MessagePipeline.<String>builder()
                 .add(new PlaceholderParser(manager))
                 .build();

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PlaceholderParser implements MessagePipeline.PipelineStage<String, UnresolvedMessage<String>> {
+public class PlaceholderParser implements MessagePipeline.PipelineStage<String, PartialMessage<String>> {
 
     private static final Pattern TAG = Pattern.compile("<(/?)(" + PlaceholderManager.VALID_PLACEHOLDER.pattern() + ")>");
 
@@ -20,15 +20,15 @@ public class PlaceholderParser implements MessagePipeline.PipelineStage<String, 
     }
 
     @Override
-    public UnresolvedMessage<String> apply(String message, PipelineContext ctx) {
+    public PartialMessage<String> apply(String message, PipelineContext ctx) {
         return parse(message);
     }
 
-    public UnresolvedMessage<String> parse(String message) {
+    public PartialMessage<String> parse(String message) {
         return parseInternal(message, 0, null).p1;
     }
 
-    private Tuples.T2<UnresolvedMessage<String>, Integer> parseInternal(String message, int start, @Nullable String tagName) {
+    private Tuples.T2<PartialMessage<String>, Integer> parseInternal(String message, int start, @Nullable String tagName) {
 
         List<Either<String, PlaceholderInstance<?, ?>>> parts = new ArrayList<>();
 
@@ -46,7 +46,7 @@ public class PlaceholderParser implements MessagePipeline.PipelineStage<String, 
 
             if (!matcher.group(1).isEmpty()) {
                 if (placeholderId.equals(tagName)) {
-                    return new Tuples.T2<>(new UnresolvedMessage<>(parts), start);
+                    return new Tuples.T2<>(new PartialMessage<>(parts), start);
                 } else {
                     continue;
                 }
@@ -60,9 +60,9 @@ public class PlaceholderParser implements MessagePipeline.PipelineStage<String, 
 
             } else {
 
-                UnresolvedMessage<String> param = null;
+                PartialMessage<String> param = null;
                 if (pl.acceptsParameter()) {
-                    Tuples.T2<UnresolvedMessage<String>, Integer> t2 = parseInternal(message, matcher.end(2) + 1, placeholderId);
+                    Tuples.T2<PartialMessage<String>, Integer> t2 = parseInternal(message, matcher.end(2) + 1, placeholderId);
                     param = t2.p1;
                     start = t2.p2;
                 }
@@ -77,6 +77,6 @@ public class PlaceholderParser implements MessagePipeline.PipelineStage<String, 
             parts.add(Either.left(message.substring(start)));
         }
 
-        return new Tuples.T2<>(new UnresolvedMessage<>(parts), start);
+        return new Tuples.T2<>(new PartialMessage<>(parts), start);
     }
 }

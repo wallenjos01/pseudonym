@@ -13,7 +13,7 @@ import java.util.Optional;
  * parsing of Minecraft text components.) This class is probably not very useful in other circumstances.
  * @param <T> The message type
  */
-public class HierarchicalAppenderResolver<T> implements MessagePipeline.PipelineStage<UnresolvedMessage<List<T>>, T> {
+public class HierarchicalAppenderResolver<T> implements MessagePipeline.PipelineStage<PartialMessage<List<T>>, T> {
 
     private final Class<T> clazz;
     private final Appender<T> appender;
@@ -35,7 +35,7 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
 
     @Override
     @SuppressWarnings("unchecked")
-    public T apply(UnresolvedMessage<List<T>> message, PipelineContext context) {
+    public T apply(PartialMessage<List<T>> message, PipelineContext context) {
 
         PipelineContext ctx = message.context().and(context);
         Map<PlaceholderManager, PipelineContext> contexts = new HashMap<>();
@@ -82,6 +82,8 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
                 PlaceholderInstance<?, ?> pl = part.rightOrThrow();
                 Optional<T> resolved;
 
+                PipelineContext finalContext = pl.holder() == null ? ctx : contexts.computeIfAbsent(pl.holder(), man -> ctx.and(man.getContext()));
+
                 if(pl.parent().type() == Void.class) { // Unknown placeholder. Check context
                     resolved = ctx.getContextPlaceholder(pl.parent().name())
                             .filter(cpl -> cpl.canResolve(clazz, ctx))
@@ -89,10 +91,7 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
 
                 } else if(pl.parent().canResolve(clazz, ctx)) {
 
-                    PlaceholderInstance<T, ?> inst = (PlaceholderInstance<T, ?>) part.rightOrThrow();
-                    PipelineContext finalContext = contexts.computeIfAbsent(inst.holder(), man -> ctx.and(man.getContext()));
-
-                    resolved = resolve(finalContext, inst);
+                    resolved = resolve(finalContext, (PlaceholderInstance<T, ?>) pl);
                 } else {
 
                     resolved = Optional.empty();

@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public record PlaceholderResolver<T>(Class<T> clazz) implements MessagePipeline.PipelineStage<UnresolvedMessage<T>, UnresolvedMessage<T>> {
+public record PlaceholderResolver<T>(Class<T> clazz) implements MessagePipeline.PipelineStage<PartialMessage<T>, PartialMessage<T>> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public UnresolvedMessage<T> apply(UnresolvedMessage<T> message, PipelineContext context) {
+    public PartialMessage<T> apply(PartialMessage<T> message, PipelineContext context) {
         PipelineContext ctx = message.context().and(context);
         Map<PlaceholderManager, PipelineContext> contexts = new HashMap<>();
         List<Either<T, PlaceholderInstance<?, ?>>> out = new ArrayList<>();
@@ -21,7 +21,7 @@ public record PlaceholderResolver<T>(Class<T> clazz) implements MessagePipeline.
             } else {
 
                 PlaceholderInstance<?, ?> pl = e.rightOrThrow();
-                PipelineContext finalContext = contexts.computeIfAbsent(pl.holder(), man -> ctx.and(man.getContext()));
+                PipelineContext finalContext = pl.holder() == null ? ctx : contexts.computeIfAbsent(pl.holder(), man -> ctx.and(man.getContext()));
 
                 if(pl.parent().type() == Void.class) { // Unknown placeholder. Check context
                     ctx.getContextPlaceholder(pl.parent().name())
@@ -37,7 +37,7 @@ public record PlaceholderResolver<T>(Class<T> clazz) implements MessagePipeline.
                 }
             }
         }
-        return new UnresolvedMessage<>(List.copyOf(out) );
+        return new PartialMessage<>(List.copyOf(out) );
     }
 
     public static final PlaceholderResolver<String> STRING = new PlaceholderResolver<>(String.class);
