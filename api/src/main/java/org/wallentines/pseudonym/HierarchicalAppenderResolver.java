@@ -107,6 +107,7 @@ public class HierarchicalAppenderResolver<T> implements MessagePipeline.Pipeline
             }
         }
 
+        if(out == null) return appender.empty();
         return out;
     }
 
