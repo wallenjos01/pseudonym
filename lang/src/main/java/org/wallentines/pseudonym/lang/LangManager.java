@@ -12,14 +12,20 @@ public class LangManager<P, R> {
     private final Class<R> messageClass;
     private final LangRegistry<P> defaults;
     private final LangProvider<P> provider;
+    private final String defaultLanguage;
 
     public final MessagePipeline<P, R> resolver;
 
     public LangManager(Class<R> messageClass, LangRegistry<P> defaults, LangProvider<P> provider, MessagePipeline<P, R> resolver) {
+        this(messageClass, defaults, provider, resolver, "en_us");
+    }
+
+    public LangManager(Class<R> messageClass, LangRegistry<P> defaults, LangProvider<P> provider, MessagePipeline<P, R> resolver, String defaultLanguage) {
         this.messageClass = messageClass;
         this.defaults = defaults;
         this.provider = provider;
         this.resolver = resolver;
+        this.defaultLanguage = defaultLanguage;
     }
 
     public Class<R> getMessageClass() {
@@ -28,7 +34,7 @@ public class LangManager<P, R> {
 
     public R getMessage(String key, Object... args) {
         PipelineContext ctx = PipelineContext.of(args);
-        return getMessageFor(key, ctx.getFirst(LocaleHolder.class).map(LocaleHolder::getLanguage).orElse(null), ctx);
+        return getMessageFor(key, ctx.getFirst(LocaleHolder.class).map(LocaleHolder::getLanguage).orElse(defaultLanguage), ctx);
     }
 
     public R getMessage(String key, String language, Object... args) {
@@ -37,17 +43,17 @@ public class LangManager<P, R> {
 
 
     public R getMessageFor(String key, PipelineContext context) {
-        return getMessageFor(key, context.getFirst(LocaleHolder.class).map(LocaleHolder::getLanguage).orElse(null), context);
+        return getMessageFor(key, context.getFirst(LocaleHolder.class).map(LocaleHolder::getLanguage).orElse(defaultLanguage), context);
     }
 
     public R getMessageFor(String key, String language, PipelineContext context) {
 
         LangRegistry<P> reg;
         if(language == null) {
-            reg = defaults;
-        } else {
-            reg = getRegistry(language);
+            language = defaultLanguage;
         }
+        reg = getRegistry(language);
+
         P message = reg.registry().get(key);
         if (message == null) {
             message = defaults.registry().get(key);

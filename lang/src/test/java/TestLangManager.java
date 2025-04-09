@@ -39,7 +39,7 @@ public class TestLangManager {
         provider = new LangProvider<>() {
             @Override
             public <R> Optional<LangRegistry<PartialMessage<String>>> get(LangManager<PartialMessage<String>, R> manager, String language) {
-                return Optional.of(esp);
+                return Optional.of(language.equals("en_us") ? defaults : esp);
             }
         };
 
