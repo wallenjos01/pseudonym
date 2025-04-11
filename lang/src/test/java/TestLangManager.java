@@ -25,21 +25,28 @@ public class TestLangManager {
                 Optional.of(new StringBuilder(ctx.param()).reverse().toString()),
                 ParameterTransformer.RESOLVE_EARLY));
 
+        LangManager.registerPlaceholders(manager);
+
         MessagePipeline<String, PartialMessage<String>> parser = MessagePipeline.parser(manager);
         defaults = new LangRegistry<>(Map.of(
                 "message.literal", parser.accept("Hello"),
-                "message.greeting", parser.accept("<greeting> <name>")
+                "message.greeting", parser.accept("<lang>greeting</lang> <name>")
         ));
 
-        LangRegistry<PartialMessage<String>> esp = new LangRegistry<>(Map.of(
+        LangRegistry<PartialMessage<String>> en = LangRegistry.builder(parser)
+                .add("message.literal", "Hello")
+                .add("greeting", "Hello,")
+                .build();
+
+        LangRegistry<PartialMessage<String>> es = new LangRegistry<>(Map.of(
                 "message.literal", parser.accept("Hola"),
-                "message.greeting", parser.accept("Hola, <name>")
+                "greeting", parser.accept("Hola,")
         ));
 
         provider = new LangProvider<>() {
             @Override
             public <R> Optional<LangRegistry<PartialMessage<String>>> get(LangManager<PartialMessage<String>, R> manager, String language) {
-                return Optional.of(language.equals("en_us") ? defaults : esp);
+                return Optional.of(language.equals("en_us") ? en : es);
             }
         };
 

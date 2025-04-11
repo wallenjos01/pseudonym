@@ -1,5 +1,7 @@
 package org.wallentines.pseudonym;
 
+import org.wallentines.mdcfg.serializer.Serializer;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -41,6 +43,10 @@ public class MessagePipeline<I, O> {
     @SuppressWarnings("unchecked")
     private <T> Object apply(PipelineStage<T, ?> stage, Object message, PipelineContext ctx) {
         return stage.apply((T) message, ctx);
+    }
+
+    public static <T> Serializer<T> serializer(MessagePipeline<String, T> parser, MessagePipeline<T, String> encoder) {
+        return Serializer.STRING.flatMap(encoder::accept, parser::accept);
     }
 
     public static <T> Builder<T, T> builder() {

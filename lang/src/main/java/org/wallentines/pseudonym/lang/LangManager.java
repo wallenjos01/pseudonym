@@ -34,7 +34,7 @@ public class LangManager<P, R> {
 
     public R getMessage(String key, Object... args) {
         PipelineContext ctx = PipelineContext.of(args);
-        return getMessageFor(key, ctx.getFirst(LocaleHolder.class).map(LocaleHolder::getLanguage).orElse(defaultLanguage), ctx);
+        return getMessageFor(key, ctx);
     }
 
     public R getMessage(String key, String language, Object... args) {
@@ -43,10 +43,24 @@ public class LangManager<P, R> {
 
 
     public R getMessageFor(String key, PipelineContext context) {
-        return getMessageFor(key, context.getFirst(LocaleHolder.class).map(LocaleHolder::getLanguage).orElse(defaultLanguage), context);
+        String lang;
+        Optional<LocaleHolder> localeHolder = context.getFirst(LocaleHolder.class);
+        if(localeHolder.isPresent()) {
+            lang = localeHolder.get().getLanguage();
+            context = context.and(PipelineContext.of(this));
+        } else {
+            lang = defaultLanguage;
+            context = context.and(PipelineContext.of(this, LocaleHolder.direct(lang)));
+        }
+        return getInternal(key, lang, context);
     }
 
     public R getMessageFor(String key, String language, PipelineContext context) {
+        PipelineContext finalCtx = context.and(PipelineContext.of(this, LocaleHolder.direct(language)));
+        return getInternal(key, language, finalCtx);
+    }
+
+    private R getInternal(String key, String language, PipelineContext context) {
 
         LangRegistry<P> reg;
         if(language == null) {

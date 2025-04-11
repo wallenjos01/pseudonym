@@ -1,8 +1,12 @@
 package org.wallentines.pseudonym.lang;
 
 
+import org.wallentines.mdcfg.codec.Codec;
+import org.wallentines.mdcfg.serializer.*;
 import org.wallentines.pseudonym.MessagePipeline;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +46,34 @@ public record LangRegistry<P>(Map<String, P> registry) {
             return new LangRegistry<>(Map.copyOf(map));
         }
 
+    }
+
+    public static <P> SerializeResult<LangRegistry<P>> fromStream(InputStream is, Codec codec, MessagePipeline<String, P> parser) throws IOException {
+        return serializer(parser).deserialize(ConfigContext.INSTANCE, codec.decode(ConfigContext.INSTANCE, is));
+    }
+
+    public static <P> BackSerializer<LangRegistry<P>> serializer(MessagePipeline<String, P> parser) {
+
+        return new BackSerializer<>() {
+            @Override
+            public <O> SerializeResult<LangRegistry<P>> deserialize(SerializeContext<O> context, O value) {
+
+                return context.asMap(value).map(map -> {
+
+                    Map<String, P> out = new HashMap<>();
+                    for (Map.Entry<String, O> ent : map.entrySet()) {
+                        SerializeResult<String> val = context.asString(ent.getValue());
+                        if (!val.isComplete()) {
+                            return SerializeResult.failure(val.getError());
+                        }
+
+                        out.put(ent.getKey(), parser.accept(val.getOrThrow()));
+                    }
+
+                    return SerializeResult.success(new LangRegistry<>(Map.copyOf(out)));
+                });
+            }
+        };
     }
 
 }
