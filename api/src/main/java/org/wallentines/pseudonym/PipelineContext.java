@@ -95,10 +95,6 @@ public class PipelineContext {
     }
 
     public PipelineContext and(Stream<PipelineContext> other) {
-        if(other == EMPTY) return this;
-        if(this == EMPTY) return this;
-        if(this == other) return this;
-
         List<PipelineContext> contexts = other.toList();
 
         Map<Class<?>, List<Object>> valuesByClass = new HashMap<>(this.valuesByClass);
@@ -122,6 +118,9 @@ public class PipelineContext {
         }
     }
 
+    public PipelineContext with(Object... values) {
+        return and(PipelineContext.of(values));
+    }
 
     public static PipelineContext of(Object... values) {
         if(values == null || values.length == 0) return EMPTY;

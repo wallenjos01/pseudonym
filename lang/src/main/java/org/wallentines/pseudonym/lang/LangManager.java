@@ -87,6 +87,14 @@ public class LangManager<P, R> {
         return ctx -> getMessageFor(key, ctx);
     }
 
+    public Message<R> message(String key, Object... args) {
+        return ctx -> getMessageFor(key, PipelineContext.of(args).and(ctx));
+    }
+
+    public Message<R> messageFor(String key, PipelineContext context) {
+        return ctx -> getMessageFor(key, context.and(ctx));
+    }
+
     public LangRegistry<P> getRegistry(String lang) {
         return registries.computeIfAbsent(lang, k -> provider.get(this, k).orElse(defaults));
     }
