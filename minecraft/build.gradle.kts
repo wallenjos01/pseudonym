@@ -32,7 +32,6 @@ dependencies {
         isTransitive = false
     }
 
-    modImplementation("me.lucko:fabric-permissions-api:0.3.3")
     modImplementation(libs.midnightcfg.minecraft)
-    modImplementation("org.wallentines:databridge:0.6.0")
+    modImplementation("org.wallentines:databridge:0.8.2-SNAPSHOT")
 }

@@ -1,7 +1,7 @@
 {
-  "name": "ptell",
-  "type": "builder",
-  "value": "org.wallentines.pseudonym.mc.impl.MainCommand::builder",
-  "permission_level": 2,
-  "permission_node": "pseudonym.command"
+    "name": "ptell",
+    "type": "builder",
+    "value": "org.wallentines.pseudonym.mc.impl.MainCommand::builder",
+    "permission_level": 2,
+    "permission_node": "pseudonym.command"
 }
