@@ -33,5 +33,5 @@ dependencies {
     }
 
     modImplementation(libs.midnightcfg.minecraft)
-    modImplementation("org.wallentines:databridge:0.8.2-SNAPSHOT")
+    modImplementation("org.wallentines:databridge:0.8.2")
 }

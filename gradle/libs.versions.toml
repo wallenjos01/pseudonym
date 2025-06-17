@@ -2,7 +2,7 @@
 junit = "5.10.2"
 slf4j = "2.0.16"
 jbr-anno = "24.0.1"
-mdcfg = "3.4.1-SNAPSHOT"
+mdcfg = "3.4.1"
 
 [libraries]
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref="jbr-anno" }
