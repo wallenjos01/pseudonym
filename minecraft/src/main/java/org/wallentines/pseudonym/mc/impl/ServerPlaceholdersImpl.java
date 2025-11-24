@@ -53,7 +53,7 @@ public class ServerPlaceholdersImpl {
     static {
 
         GLOBAL_PLACEHOLDERS.register(Placeholder.of("player_username", String.class,
-                ctx -> ctx.context().getFirst(ServerPlayer.class).map(spl -> spl.getGameProfile().getName())));
+                ctx -> ctx.context().getFirst(ServerPlayer.class).map(spl -> spl.getGameProfile().name())));
 
         GLOBAL_PLACEHOLDERS.register(Placeholder.of("player_uuid", String.class,
                 ctx -> ctx.context().getFirst(ServerPlayer.class).map(Entity::getStringUUID)));

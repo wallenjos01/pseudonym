@@ -53,7 +53,7 @@ public record ConfigTextParserImpl(char colorChar, boolean hexSupport, boolean s
         if(style.isObfuscated()) out.append(colorChar).append("k");
 
         ComponentContents contents = component.getContents();
-        if(contents.type() == PlainTextContents.TYPE) {
+        if(contents instanceof PlainTextContents) {
             out.append(((PlainTextContents) contents).text());
         }
 
