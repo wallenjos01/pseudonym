@@ -6,6 +6,8 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+
 import org.wallentines.pseudonym.*;
 import org.wallentines.pseudonym.lang.LangManager;
 
@@ -53,13 +55,22 @@ public class ServerPlaceholdersImpl {
     static {
 
         GLOBAL_PLACEHOLDERS.register(Placeholder.of("player_username", String.class,
-                ctx -> ctx.context().getFirst(ServerPlayer.class).map(spl -> spl.getGameProfile().name())));
+                ctx -> ctx.context().getFirst(Player.class).map(spl -> spl.getGameProfile().name())));
 
         GLOBAL_PLACEHOLDERS.register(Placeholder.of("player_uuid", String.class,
-                ctx -> ctx.context().getFirst(ServerPlayer.class).map(Entity::getStringUUID)));
+                ctx -> ctx.context().getFirst(Player.class).map(Entity::getStringUUID)));
 
         GLOBAL_PLACEHOLDERS.register(Placeholder.of("player_name", Component.class,
-                ctx -> ctx.context().getFirst(ServerPlayer.class).map(ServerPlayer::getDisplayName)));
+                ctx -> ctx.context().getFirst(Player.class).map(Player::getDisplayName)));
+
+        GLOBAL_PLACEHOLDERS.register(Placeholder.of("entity_uuid", String.class,
+                ctx -> ctx.context().getFirst(Entity.class).map(Entity::getStringUUID)));
+
+        GLOBAL_PLACEHOLDERS.register(Placeholder.of("entity_name", Component.class,
+                ctx -> ctx.context().getFirst(Entity.class).map(Entity::getDisplayName)));
+
+        GLOBAL_PLACEHOLDERS.register(Placeholder.of("entity_dimension", String.class, 
+            ctx -> ctx.context().getFirst(Entity.class).map(ent -> ent.level().dimension().location().toString())));
 
         GLOBAL_PLACEHOLDERS.register(Placeholder.of("server_online_players", String.class,
                 ctx -> ctx.context().getFirst(MinecraftServer.class).map(MinecraftServer::getPlayerCount).map(Object::toString)));
