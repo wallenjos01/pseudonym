@@ -11,7 +11,7 @@ repositories {
     maven("https://maven.wallentines.org/releases")
 }
 dependencies {
-    implementation("org.wallentines:pseudonym-api:0.4.1")
+    implementation("org.wallentines:pseudonym-api:0.4.4")
 }
 ```
 
