@@ -2,6 +2,6 @@
     "name": "ptell",
     "type": "builder",
     "value": "org.wallentines.pseudonym.mc.impl.MainCommand::builder",
-    "permission_level": 2,
+    "permission_level": "gamemasters",
     "permission_node": "pseudonym.command"
 }
