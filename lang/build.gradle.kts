@@ -5,9 +5,9 @@ plugins {
 
 dependencies {
 
-    api("org.wallentines:midnightcfg-api:3.1.0")
-    api("org.wallentines:midnightcfg-codec-nbt:3.1.0")
-    api("org.wallentines:midnightcfg-api-sql:3.1.0")
+    api(libs.midnightcfg.api)
+    api(libs.midnightcfg.api.sql)
+    api(libs.midnightcfg.codec.nbt)
     api(project(":api"))
 
     compileOnly(libs.jetbrains.annotations)

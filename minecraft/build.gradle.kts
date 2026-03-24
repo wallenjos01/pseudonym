@@ -10,15 +10,14 @@ Utils.setupResources(project, rootProject, "fabric.mod.json")
 dependencies {
 
     minecraft("com.mojang:minecraft:${project.properties["minecraft-version"]}")
-    mappings(loom.officialMojangMappings())
-    modImplementation("net.fabricmc:fabric-loader:${project.properties["fabric-loader-version"]}")
+    implementation("net.fabricmc:fabric-loader:${project.properties["fabric-loader-version"]}")
 
     // Fabric API
     listOf(
         "fabric-api-base",
         "fabric-resource-loader-v0"
     ).forEach { mod ->
-        modApi(include(fabricApi.module(mod, "${project.properties["fabric-api-version"]}"))!!)
+        api(include(fabricApi.module(mod, "${project.properties["fabric-api-version"]}"))!!)
     }
     api(project(":api"))
     api(project(":lang"))
@@ -32,6 +31,15 @@ dependencies {
         isTransitive = false
     }
 
-    modImplementation(libs.midnightcfg.minecraft)
-    modImplementation("org.wallentines:databridge:0.10.0")
+    implementation(libs.midnightcfg.minecraft)
+    implementation("org.wallentines:databridge:0.11.0-SNAPSHOT")
+
+    // Gametest API modules
+    val testApiModules = listOf(
+        "fabric-gametest-api-v1",
+        "fabric-registry-sync-v0"
+    )
+    for(mod in testApiModules) {
+        gametestImplementation(fabricApi.module(mod, "${project.properties["fabric-api-version"]}"))
+    }
 }

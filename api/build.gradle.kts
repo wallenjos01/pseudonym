@@ -5,6 +5,6 @@ plugins {
 
 dependencies {
 
-    api("org.wallentines:midnightcfg-api:3.0.1")
+    api(libs.midnightcfg.api)
     compileOnly(libs.jetbrains.annotations)
 }

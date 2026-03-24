@@ -115,7 +115,7 @@ public class ServerPlaceholdersImpl {
                     MessagePipeline.RESOLVE_STRING.accept(ctx.param(), ctx.context())
                 )), ParameterTransformer.IDENTITY));
 
-        GLOBAL_PLACEHOLDERS.register(Placeholder.of("item", Component.class,
+        GLOBAL_PLACEHOLDERS.register(Placeholder.of("item_sprite", Component.class,
                 ctx -> {
                     try {
                         return Optional.of(
@@ -131,7 +131,7 @@ public class ServerPlaceholdersImpl {
                     }
                 }, ParameterTransformer.IDENTITY));
         
-        GLOBAL_PLACEHOLDERS.register(Placeholder.of("block", Component.class,
+        GLOBAL_PLACEHOLDERS.register(Placeholder.of("block_sprite", Component.class,
                 ctx -> {
                     try {
                         return Optional.of(
