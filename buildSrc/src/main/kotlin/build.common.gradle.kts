@@ -1,4 +1,4 @@
-import buildlogic.Utils
+import buildlogic.Utils;
 
 plugins {
     id("java")
@@ -27,7 +27,7 @@ java {
 }
 
 tasks.withType<Jar> {
-    archiveBaseName.set(Utils.getArchiveName(project, rootProject))
+    archiveBaseName.set(Utils.getArchiveName(project))
 }
 
 tasks.named<Test>("test") {
