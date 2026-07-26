@@ -29,6 +29,30 @@ public record ConfigTextParserImpl(char colorChar, boolean hexSupport, boolean s
         return serialize(component, new StringBuilder());
     }
 
+    private static char fromTextColor(TextColor color) {
+        int val = color.getValue();
+        switch(val) {
+            case 0: return '0';
+            case 170: return '1';
+            case 43520: return '2';
+            case 43960: return '3';
+            case 11141120: return '4';
+            case 11141290: return '5';
+            case 16755200: return '6';
+            case 11184810: return '7';
+            case 5592405: return '8';
+            case 5592575: return '9';
+            case 5635925: return 'a';
+            case 5636095: return 'b';
+            case 16733525: return 'c';
+            case 16733695: return 'd';
+            case 16777045: return 'e';
+            case 16777215: return 'f';
+            default: return 0;
+        }
+    }
+
+
     private String serialize(Component component, StringBuilder out) {
 
         Style style = component.getStyle();
@@ -36,9 +60,9 @@ public record ConfigTextParserImpl(char colorChar, boolean hexSupport, boolean s
             if(hexSupport) {
                 out.append(colorChar).append(String.format(Locale.ROOT, "#%06X", style.getColor().getValue()));
             } else {
-                ChatFormatting fmt = ChatFormatting.getByName(style.getColor().serialize());
-                if(fmt != null) {
-                    out.append(colorChar).append(fmt.getChar());
+                char fmt = fromTextColor(style.getColor());
+                if(fmt != 0) {
+                    out.append(colorChar).append(fmt);
                 }
             }
         }

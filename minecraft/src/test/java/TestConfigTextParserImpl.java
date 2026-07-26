@@ -1,5 +1,6 @@
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.Style;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -79,7 +80,7 @@ public class TestConfigTextParserImpl {
         Component cmp = ConfigTextParserImpl.INSTANCE.parse(toParse);
         Assertions.assertEquals(Component.literal("Hello, World")
                 .withStyle(Style.EMPTY.withColor(ChatFormatting.RED)
-                        .withShadowColor(0xFF000000 | ChatFormatting.GREEN.getColor())), cmp);
+                        .withShadowColor(0xFF000000 | TextColor.GREEN.getValue())), cmp);
     }
     @Test
     public void canParseJustShadowColor() {
@@ -87,7 +88,7 @@ public class TestConfigTextParserImpl {
         Component cmp = ConfigTextParserImpl.INSTANCE.parse(toParse);
         Assertions.assertEquals(Component.literal("Hello, World")
                 .withStyle(Style.EMPTY
-                        .withShadowColor(0xFF000000 | ChatFormatting.GREEN.getColor())), cmp);
+                        .withShadowColor(0xFF000000 | TextColor.GREEN.getValue())), cmp);
     }
 
     @Test
