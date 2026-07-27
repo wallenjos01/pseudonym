@@ -32,7 +32,7 @@ dependencies {
     }
 
     implementation(libs.midnightcfg.minecraft)
-    implementation("org.wallentines:databridge:0.12.1-SNAPSHOT")
+    implementation("org.wallentines:databridge:0.12.1")
 
     // Gametest API modules
     val testApiModules = listOf(
